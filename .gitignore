@@ -9,3 +9,7 @@ instance/
 *.sqlite3
 
 .vscode/
+
+service_account.json
+credentials.json
+token.json
