@@ -1,10 +1,14 @@
+import os
 import requests
 import urllib3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbym5Gpvhofrzh471HX---q2PH8Ul-TKtFMnJQNwp_aHxIEUQKiusAacgI1TtE9w-20/exec"
-SECRET = "emeerj-2026-chave-teste"
+APPS_SCRIPT_URL = os.getenv("APPS_SCRIPT_URL")
+SECRET = os.getenv("SHEETS_SECRET")
 
 
 def enviar_inscricao_para_planilha(dados):
