@@ -7,7 +7,7 @@
 
     <title>EMEERJ 2026</title>
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
@@ -18,296 +18,295 @@
     </header>
 
     <main class="container">
-        <form id="formInscricao">
 
-            <form id="formInscricao">
-<!-- DADOS PESSOAIS DO PARTICIPANTE -->
-                <div class="form-group">
-                    <label for="nomeCompleto">Nome completo do participante</label>
-                    <input type="text" id="nomeCompleto" name="nome_completo" required>
-                </div>
+        <form id="formInscricao" action="/inscricao" method="post">
+            <!-- DADOS PESSOAIS DO PARTICIPANTE -->
+            <div class="form-group">
+                <label for="nomeCompleto">Nome completo do participante</label>
+                <input type="text" id="nomeCompleto" name="nome_completo" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="nomeSocial">Nome social / Nome para o crachá</label>
-                    <input type="text" id="nomeSocial" name="nome_social" required>
-                </div>
+            <div class="form-group">
+                <label for="nomeSocial">Nome social / Nome para o crachá</label>
+                <input type="text" id="nomeSocial" name="nome_social" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="idade">Qual sua idade?</label>
-                    <input type="number" id="idade" name="idade" min="1" required>
-                </div>
+            <div class="form-group">
+                <label for="idade">Qual sua idade?</label>
+                <input type="number" id="idade" name="idade" min="1" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="genero">Gênero</label>
-                    <select id="genero" name="genero" required>
-                        <option value="">Selecione</option>
-                        <option value="Masculino CIS">Masculino CIS</option>
-                        <option value="Masculino Trans">Masculino Trans</option>
-                        <option value="Feminino CIS">Feminino CIS</option>
-                        <option value="Feminino Trans">Feminino Trans</option>
-                        <option value="Não-Binário">Não-Binário</option>
-                    </select>
-                </div>
-<!-- INFORMAÇÕES DA CASA ESPÍRITA E CEU -->
-                <div class="form-group">
-                    <label for="casaEspirita">Casa espírita que você frequenta</label>
-                    <input type="text" id="casaEspirita" name="casa_espirita" required>
-                </div>
+            <div class="form-group">
+                <label for="genero">Gênero</label>
+                <select id="genero" name="genero" required>
+                    <option value="">Selecione</option>
+                    <option value="Masculino CIS">Masculino CIS</option>
+                    <option value="Masculino Trans">Masculino Trans</option>
+                    <option value="Feminino CIS">Feminino CIS</option>
+                    <option value="Feminino Trans">Feminino Trans</option>
+                    <option value="Não-Binário">Não-Binário</option>
+                </select>
+            </div>
+            <!-- INFORMAÇÕES DA CASA ESPÍRITA E CEU -->
+            <div class="form-group">
+                <label for="casaEspirita">Casa espírita que você frequenta</label>
+                <input type="text" id="casaEspirita" name="casa_espirita" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="ceu">Sua casa pertence a qual CEU?</label>
-                    <select id="ceu" name="ceu" required>
-                        <option value="">Selecione</option>
-                        <option value="2º - Nilópolis">2º - Nilópolis</option>
-                        <option value="3º - Petrópolis">3º - Petrópolis</option>
-                        <option value="4º - São João de Meriti">4º - São João de Meriti</option>
-                        <option value="6º - Magé">6º - Magé</option>
-                        <option value="7º - Duque de Caxias">7º - Duque de Caxias</option>
-                        <option value="9º - Nova Iguaçu">9º - Nova Iguaçu</option>
-                        <option value="10º - Belford Roxo">10º - Belford Roxo</option>
-                        <option value="11º - Mesquita">11º - Mesquita</option>
-                        <option value="17º - Leopoldina">17º - Leopoldina</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="ceu">Sua casa pertence a qual CEU?</label>
+                <select id="ceu" name="ceu" required>
+                    <option value="">Selecione</option>
+                    <option value="2º - Nilópolis">2º - Nilópolis</option>
+                    <option value="3º - Petrópolis">3º - Petrópolis</option>
+                    <option value="4º - São João de Meriti">4º - São João de Meriti</option>
+                    <option value="6º - Magé">6º - Magé</option>
+                    <option value="7º - Duque de Caxias">7º - Duque de Caxias</option>
+                    <option value="9º - Nova Iguaçu">9º - Nova Iguaçu</option>
+                    <option value="10º - Belford Roxo">10º - Belford Roxo</option>
+                    <option value="11º - Mesquita">11º - Mesquita</option>
+                    <option value="17º - Leopoldina">17º - Leopoldina</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
 
-                <div class="form-group hidden" id="outroCeuContainer">
-                    <label for="outroCeu">Informe qual CEU</label>
-                    <input type="text" id="outroCeu" name="outro_ceu">
-                </div>
+            <div class="form-group hidden" id="outroCeuContainer">
+                <label for="outroCeu">Informe qual CEU</label>
+                <input type="text" id="outroCeu" name="outro_ceu">
+            </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone para contato, preferencialmente WhatsApp</label>
-                    <input type="tel" id="telefone" name="telefone" required>
-                </div>
-<!-- INFORMAÇÕES DE SAÚDE E ALIMENTAÇÃO -->
-                <div class="form-group">
-                    <label>Alimentação</label>
+            <div class="form-group">
+                <label for="telefone">Telefone para contato, preferencialmente WhatsApp</label>
+                <input type="tel" id="telefone" name="telefone" required>
+            </div>
+            <!-- INFORMAÇÕES DE SAÚDE E ALIMENTAÇÃO -->
+            <div class="form-group">
+                <label>Alimentação</label>
 
-                    <div class="checkbox-group">
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Comum" id="alimentacaoComum">
-                            Comum
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Vegetariana">
-                            Vegetariana
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Vegana">
-                            Vegana
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Diabético">
-                            Diabético
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Intolerância à lactose">
-                            Intolerância à lactose
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="alimentacao" value="Intolerância a frutos do mar">
-                            Intolerância a frutos do mar
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Possui alguma alergia?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="possui_alergia" value="Sim">
-                            Sim
-                        </label>
-
-                        <label>
-                            <input type="radio" name="possui_alergia" value="Não">
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden" id="alergiaContainer">
-                    <label for="qualAlergia">Qual alergia?</label>
-                    <input type="text" id="qualAlergia" name="qual_alergia">
-                </div>
-
-                <div class="form-group">
-                    <label>Faz uso de algum medicamento?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="usa_medicamento" value="Sim">
-                            Sim
-                        </label>
-
-                        <label>
-                            <input type="radio" name="usa_medicamento" value="Não" required>
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden" id="medicamentoContainer">
-                    <label for="qualMedicamento">Qual medicamento?</label>
-                    <input type="text" id="qualMedicamento" name="qual_medicamento">
-                </div>
-
-                <div class="form-group">
-                    <label>Possui algum convênio médico?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="possui_convenio" value="Sim">
-                            Sim
-                        </label>
-
-                        <label>
-                            <input type="radio" name="possui_convenio" value="Não" required>
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden" id="convenioContainer">
-                    <label for="qualConvenio">Qual convênio médico?</label>
-                    <input type="text" id="qualConvenio" name="qual_convenio">
-                </div>
-
-                <div class="form-group">
-                    <label>Em caso de emergência, com quem devemos entrar em contato?</label>
-
-                    <input type="text" id="contatoEmergenciaNome" name="contato_emergencia_nome"
-                        placeholder="Nome do contato" required>
-
-                    <input type="tel" id="contatoEmergenciaTelefone" name="contato_emergencia_telefone"
-                        placeholder="Telefone do contato" required>
-                </div>
-<!-- PARTICIPAÇÃO NO EVENTO -->
-                <div class="form-group">
-                    <label>Já participou de algum EMEERJ anterior?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="participou_emeerj" value="Sim" required>
-                            Sim
-                        </label>
-
-                        <label>
-                            <input type="radio" name="participou_emeerj" value="Não">
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Possui algum tipo de deficiência?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="possui_deficiencia" value="Sim">
-                            Sim
-                        </label>
-
-                        <label>
-                            <input type="radio" name="possui_deficiencia" value="Não" required>
-                            Não
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden" id="deficienciaContainer">
-                    <label for="qualDeficiencia">Qual deficiência?</label>
-                    <input type="text" id="qualDeficiencia" name="qual_deficiencia">
-                </div>
-<!-- PARTICIPAÇÃO NO EVENTO -->
-                <div class="form-group">
-                    <label>Como você participará do EMEERJ?</label>
-
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="tipo_participacao" value="Confraternista" required>
-                            Confraternista
-                        </label>
-
-                        <label>
-                            <input type="radio" name="tipo_participacao" value="Trabalhador">
-                            Trabalhador
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group hidden" id="trabalhoContainer">
-                    <label for="areaTrabalho">Área de trabalho</label>
-
-                    <select id="areaTrabalho" name="area_trabalho">
-                        <option value="">Selecione</option>
-                        <option value="Estudo">Estudo</option>
-                        <option value="Recepção e apoio">Recepção e apoio</option>
-                        <option value="Serviços gerais">Serviços gerais</option>
-                        <option value="Administração">Administração</option>
-                        <option value="Pequenos companheiros">Pequenos companheiros</option>
-                        <option value="Alimentação">Alimentação</option>
-                    </select>
-                </div>
-<!-- CAMISA E RESUMO DO PAGAMENTO -->
-                <div class="form-group">
+                <div class="checkbox-group">
                     <label>
-                        Gostaria da camisa do evento?
-                        <span class="observacao">(Valor provisório: R$ 40,00)</span>
+                        <input type="checkbox" name="alimentacao" value="Comum" id="alimentacaoComum">
+                        Comum
                     </label>
 
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="quer_camisa" value="Sim" required>
-                            Sim
-                        </label>
+                    <label>
+                        <input type="checkbox" name="alimentacao" value="Vegetariana">
+                        Vegetariana
+                    </label>
 
-                        <label>
-                            <input type="radio" name="quer_camisa" value="Não">
-                            Não
-                        </label>
-                    </div>
+                    <label>
+                        <input type="checkbox" name="alimentacao" value="Vegana">
+                        Vegana
+                    </label>
+
+                    <label>
+                        <input type="checkbox" name="alimentacao" value="Diabético">
+                        Diabético
+                    </label>
+
+                    <label>
+                        <input type="checkbox" name="alimentacao" value="Intolerância à lactose">
+                        Intolerância à lactose
+                    </label>
+
+                    <label>
+                        <input type="checkbox" name="alimentacao" value="Intolerância a frutos do mar">
+                        Intolerância a frutos do mar
+                    </label>
                 </div>
+            </div>
 
-                <div class="form-group hidden" id="camisaContainer">
-                    <label for="tamanhoCamisa">Tamanho da camisa</label>
+            <div class="form-group">
+                <label>Possui alguma alergia?</label>
 
-                    <select id="tamanhoCamisa" name="tamanho_camisa">
-                        <option value="">Selecione</option>
-                        <option value="P">P</option>
-                        <option value="M">M</option>
-                        <option value="G">G</option>
-                        <option value="GG">GG</option>
-                        <option value="XG">XG</option>
-                    </select>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="possui_alergia" value="Sim">
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="possui_alergia" value="Não">
+                        Não
+                    </label>
                 </div>
+            </div>
 
-                <div class="resumo-pagamento">
-                    <p>Inscrição: <strong>R$ 25,00</strong></p>
-                    <p>Camisa: <strong id="valorCamisaTexto">R$ 0,00</strong></p>
-                    <p>Total: <strong id="valorTotalTexto">R$ 25,00</strong></p>
+            <div class="form-group hidden" id="alergiaContainer">
+                <label for="qualAlergia">Qual alergia?</label>
+                <input type="text" id="qualAlergia" name="qual_alergia">
+            </div>
+
+            <div class="form-group">
+                <label>Faz uso de algum medicamento?</label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="usa_medicamento" value="Sim">
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="usa_medicamento" value="Não" required>
+                        Não
+                    </label>
                 </div>
+            </div>
 
-                <button type="submit">
-                    Continuar para pagamento
-                </button>
+            <div class="form-group hidden" id="medicamentoContainer">
+                <label for="qualMedicamento">Qual medicamento?</label>
+                <input type="text" id="qualMedicamento" name="qual_medicamento">
+            </div>
 
-            </form>
+            <div class="form-group">
+                <label>Possui algum convênio médico?</label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="possui_convenio" value="Sim">
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="possui_convenio" value="Não" required>
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="convenioContainer">
+                <label for="qualConvenio">Qual convênio médico?</label>
+                <input type="text" id="qualConvenio" name="qual_convenio">
+            </div>
+
+            <div class="form-group">
+                <label>Em caso de emergência, com quem devemos entrar em contato?</label>
+
+                <input type="text" id="contatoEmergenciaNome" name="contato_emergencia_nome"
+                    placeholder="Nome do contato" required>
+
+                <input type="tel" id="contatoEmergenciaTelefone" name="contato_emergencia_telefone"
+                    placeholder="Telefone do contato" required>
+            </div>
+            <!-- PARTICIPAÇÃO NO EVENTO -->
+            <div class="form-group">
+                <label>Já participou de algum EMEERJ anterior?</label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="participou_emeerj" value="Sim" required>
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="participou_emeerj" value="Não">
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Possui algum tipo de deficiência?</label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="possui_deficiencia" value="Sim">
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="possui_deficiencia" value="Não" required>
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="deficienciaContainer">
+                <label for="qualDeficiencia">Qual deficiência?</label>
+                <input type="text" id="qualDeficiencia" name="qual_deficiencia">
+            </div>
+            <!-- PARTICIPAÇÃO NO EVENTO -->
+            <div class="form-group">
+                <label>Como você participará do EMEERJ?</label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="tipo_participacao" value="Confraternista" required>
+                        Confraternista
+                    </label>
+
+                    <label>
+                        <input type="radio" name="tipo_participacao" value="Trabalhador">
+                        Trabalhador
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="trabalhoContainer">
+                <label for="areaTrabalho">Área de trabalho</label>
+
+                <select id="areaTrabalho" name="area_trabalho">
+                    <option value="">Selecione</option>
+                    <option value="Estudo">Estudo</option>
+                    <option value="Recepção e apoio">Recepção e apoio</option>
+                    <option value="Serviços gerais">Serviços gerais</option>
+                    <option value="Administração">Administração</option>
+                    <option value="Pequenos companheiros">Pequenos companheiros</option>
+                    <option value="Alimentação">Alimentação</option>
+                </select>
+            </div>
+            <!-- CAMISA E RESUMO DO PAGAMENTO -->
+            <div class="form-group">
+                <label>
+                    Gostaria da camisa do evento?
+                    <span class="observacao">(Valor provisório: R$ 40,00)</span>
+                </label>
+
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="quer_camisa" value="Sim" required>
+                        Sim
+                    </label>
+
+                    <label>
+                        <input type="radio" name="quer_camisa" value="Não">
+                        Não
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="camisaContainer">
+                <label for="tamanhoCamisa">Tamanho da camisa</label>
+
+                <select id="tamanhoCamisa" name="tamanho_camisa">
+                    <option value="">Selecione</option>
+                    <option value="P">P</option>
+                    <option value="M">M</option>
+                    <option value="G">G</option>
+                    <option value="GG">GG</option>
+                    <option value="XG">XG</option>
+                </select>
+            </div>
+
+            <div class="resumo-pagamento">
+                <p>Inscrição: <strong>R$ 25,00</strong></p>
+                <p>Camisa: <strong id="valorCamisaTexto">R$ 0,00</strong></p>
+                <p>Total: <strong id="valorTotalTexto">R$ 25,00</strong></p>
+            </div>
+
+            <button type="submit">
+                Continuar para pagamento
+            </button>
+
+        </form>
     </main>
 
-    <script src="/static/js/script.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 

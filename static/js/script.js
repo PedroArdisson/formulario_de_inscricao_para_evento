@@ -161,3 +161,91 @@ formInscricao.addEventListener("submit", (event) => {
         return;
     }
 });
+
+formInscricao.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const alimentacoesMarcadas = document.querySelectorAll(
+        'input[name="alimentacao"]:checked'
+    );
+
+    if (alimentacoesMarcadas.length === 0) {
+        alert("Selecione pelo menos uma opção de alimentação.");
+        return;
+    }
+
+    const dados = {
+        nome_completo: document.getElementById("nomeCompleto").value,
+        email: document.getElementById("email").value,
+        nome_social: document.getElementById("nomeSocial").value,
+        idade: document.getElementById("idade").value,
+        genero: document.getElementById("genero").value,
+        casa_espirita: document.getElementById("casaEspirita").value,
+        ceu: document.getElementById("ceu").value,
+        outro_ceu: document.getElementById("outroCeu").value,
+        telefone: document.getElementById("telefone").value,
+
+        alimentacao: Array.from(alimentacoesMarcadas).map(
+            item => item.value
+        ),
+
+        possui_alergia: document.querySelector(
+            'input[name="possui_alergia"]:checked'
+        )?.value,
+
+        qual_alergia: document.getElementById("qualAlergia").value,
+
+        usa_medicamento: document.querySelector(
+            'input[name="usa_medicamento"]:checked'
+        )?.value,
+
+        qual_medicamento: document.getElementById("qualMedicamento").value,
+
+        possui_convenio: document.querySelector(
+            'input[name="possui_convenio"]:checked'
+        )?.value,
+
+        qual_convenio: document.getElementById("qualConvenio").value,
+
+        contato_emergencia_nome: document.getElementById(
+            "contatoEmergenciaNome"
+        ).value,
+
+        contato_emergencia_telefone: document.getElementById(
+            "contatoEmergenciaTelefone"
+        ).value,
+
+        participou_emeerj: document.querySelector(
+            'input[name="participou_emeerj"]:checked'
+        )?.value,
+
+        possui_deficiencia: document.querySelector(
+            'input[name="possui_deficiencia"]:checked'
+        )?.value,
+
+        qual_deficiencia: document.getElementById("qualDeficiencia").value,
+
+        tipo_participacao: document.querySelector(
+            'input[name="tipo_participacao"]:checked'
+        )?.value,
+
+        area_trabalho: document.getElementById("areaTrabalho").value,
+
+        quer_camisa: document.querySelector(
+            'input[name="quer_camisa"]:checked'
+        )?.value,
+
+        tamanho_camisa: document.getElementById("tamanhoCamisa").value
+    };
+
+    const resultado = await resposta.json();
+
+    alert(resultado.mensagem);
+});
+
+
+formInscricao.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    alert("O JavaScript interceptou o formulário!");
+});
