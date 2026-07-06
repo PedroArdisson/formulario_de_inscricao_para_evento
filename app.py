@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect
-import sqlite3
 from datetime import datetime
+
 from mercado_pago_service import criar_preferencia_pagamento
 from sheets_service import enviar_inscricao_para_planilha
+from database import conectar_banco, inicializar_banco
 
 app = Flask(__name__)
+
+inicializar_banco()
 
 VALOR_INSCRICAO = 25
 VALOR_CAMISA = 40  # Valor provisório
@@ -76,7 +79,7 @@ def receber_inscricao():
     termo_lgpd = request.form.get("termo_lgpd")
 
     # Salva no SQLite
-    conn = sqlite3.connect("database.db")
+    conn = conectar_banco()
     cursor = conn.cursor()
 
     cursor.execute("""
