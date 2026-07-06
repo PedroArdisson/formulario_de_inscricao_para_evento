@@ -1,9 +1,25 @@
-from flask import Flask, render_template, request, redirect
+import os
+from decimal import Decimal
 from datetime import datetime
 
-from mercado_pago_service import criar_preferencia_pagamento
+from flask import Flask, render_template, request, redirect
+from dotenv import load_dotenv
+
+from mercadopago.webhook import (
+    WebhookSignatureValidator,
+    InvalidWebhookSignatureError
+)
+
+from mercado_pago_service import (
+    criar_preferencia_pagamento,
+    consultar_pagamento
+)
+
 from sheets_service import enviar_inscricao_para_planilha
 from database import conectar_banco, inicializar_banco
+
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -245,6 +261,22 @@ def receber_inscricao():
 
         print("Preferência criada no Mercado Pago:")
         print(pagamento)
+        with conectar_banco() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                UPDATE inscricoes
+                SET preference_id = ?
+                WHERE id = ?
+                """,
+                (
+                    pagamento["id_preferencia"],
+                    id_inscricao
+                )
+            )
+
+            conn.commit()
 
         return redirect(pagamento["link_pagamento"])
 
@@ -294,14 +326,217 @@ def pagamento_pendente():
 
 @app.route("/webhook/mercadopago", methods=["POST"])
 def webhook_mercado_pago():
+    """
+    Recebe notificações de pagamento do Mercado Pago.
+
+    Fluxo:
+    1. Valida a assinatura do webhook.
+    2. Consulta o pagamento na API oficial.
+    3. Localiza a inscrição pela external_reference.
+    4. Confere o valor do pagamento.
+    5. Atualiza o SQLite.
+    """
+
+    webhook_secret = os.getenv("MP_WEBHOOK_SECRET")
+
+    if not webhook_secret:
+        print("ERRO: MP_WEBHOOK_SECRET não configurado.")
+        return "", 500
+
+    # Dados usados para validar a assinatura
+    x_signature = request.headers.get("x-signature")
+    x_request_id = request.headers.get("x-request-id")
+    data_id = request.args.get("data.id")
+
+    if not x_signature or not x_request_id or not data_id:
+        print("Webhook recebido sem dados de assinatura completos.")
+        return "", 400
+
+    # ==============================
+    # 1. VALIDAR ASSINATURA
+    # ==============================
+
+    try:
+        WebhookSignatureValidator.validate(
+            x_signature,
+            x_request_id,
+            data_id,
+            webhook_secret
+        )
+
+    except InvalidWebhookSignatureError:
+        print("Webhook rejeitado: assinatura inválida.")
+        return "", 401
+
+    # ==============================
+    # 2. LER TIPO DA NOTIFICAÇÃO
+    # ==============================
+
     dados = request.get_json(silent=True) or {}
 
-    print("\n--- WEBHOOK MERCADO PAGO RECEBIDO ---")
-    print("Query params:", request.args.to_dict())
-    print("Dados:", dados)
-    print("-------------------------------------\n")
+    tipo = (
+        request.args.get("type")
+        or dados.get("type")
+    )
 
-    return "", 200
+    if tipo != "payment":
+        print(f"Notificação ignorada. Tipo: {tipo}")
+        return "", 200
+
+    payment_id = str(data_id)
+
+    try:
+        # ==============================
+        # 3. CONSULTAR PAGAMENTO REAL
+        # ==============================
+
+        pagamento = consultar_pagamento(payment_id)
+
+        status_mp = pagamento.get("status")
+        status_detail = pagamento.get("status_detail")
+        external_reference = pagamento.get("external_reference")
+        data_aprovacao = pagamento.get("date_approved")
+        valor_pago = pagamento.get("transaction_amount")
+
+        print(
+            f"Pagamento consultado: "
+            f"id={payment_id}, "
+            f"status={status_mp}, "
+            f"inscricao={external_reference}"
+        )
+
+        # ==============================
+        # 4. VALIDAR INSCRIÇÃO
+        # ==============================
+
+        if not external_reference:
+            print(
+                "Pagamento sem external_reference. "
+                "Notificação ignorada."
+            )
+            return "", 200
+
+        try:
+            id_inscricao = int(external_reference)
+
+        except (TypeError, ValueError):
+            print(
+                "external_reference inválida:",
+                external_reference
+            )
+            return "", 200
+
+        # ==============================
+        # 5. LOCALIZAR NO BANCO
+        # ==============================
+
+        with conectar_banco() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT valor_total
+                FROM inscricoes
+                WHERE id = ?
+                """,
+                (id_inscricao,)
+            )
+
+            inscricao = cursor.fetchone()
+
+            if not inscricao:
+                print(
+                    f"Inscrição {id_inscricao} "
+                    "não encontrada."
+                )
+                return "", 200
+
+            # ==============================
+            # 6. CONFERIR O VALOR
+            # ==============================
+
+            valor_esperado = Decimal(
+                str(inscricao[0])
+            ).quantize(
+                Decimal("0.01")
+            )
+
+            valor_recebido = Decimal(
+                str(valor_pago)
+            ).quantize(
+                Decimal("0.01")
+            )
+
+            if valor_recebido != valor_esperado:
+                print(
+                    "ATENÇÃO: valor divergente.",
+                    f"Esperado={valor_esperado}",
+                    f"Recebido={valor_recebido}"
+                )
+                return "", 200
+
+            # ==============================
+            # 7. TRADUZIR STATUS
+            # ==============================
+
+            mapa_status = {
+                "approved": "APROVADO",
+                "pending": "PENDENTE",
+                "in_process": "PENDENTE",
+                "authorized": "AUTORIZADO",
+                "rejected": "RECUSADO",
+                "cancelled": "CANCELADO",
+                "refunded": "REEMBOLSADO",
+                "charged_back": "ESTORNADO"
+            }
+
+            status_local = mapa_status.get(
+                status_mp,
+                str(status_mp).upper()
+            )
+
+            # ==============================
+            # 8. ATUALIZAR INSCRIÇÃO
+            # ==============================
+
+            cursor.execute(
+                """
+                UPDATE inscricoes
+                SET
+                    status_pagamento = ?,
+                    payment_id = ?,
+                    payment_status_detail = ?,
+                    data_pagamento = COALESCE(
+                        ?,
+                        data_pagamento
+                    )
+                WHERE id = ?
+                """,
+                (
+                    status_local,
+                    payment_id,
+                    status_detail,
+                    data_aprovacao,
+                    id_inscricao
+                )
+            )
+
+            conn.commit()
+
+        print(
+            f"Inscrição {id_inscricao} atualizada: "
+            f"{status_local}"
+        )
+
+        return "", 200
+
+    except Exception as erro:
+        print(
+            "ERRO AO PROCESSAR WEBHOOK:",
+            repr(erro)
+        )
+
+        return "", 500
 
 if __name__ == "__main__":
     app.run(debug=True)

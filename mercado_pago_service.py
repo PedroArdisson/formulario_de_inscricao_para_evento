@@ -145,3 +145,37 @@ def criar_preferencia_pagamento(
         "id_preferencia": resposta_json.get("id"),
         "link_pagamento": link_pagamento
     }
+    
+def consultar_pagamento(payment_id):
+    """
+    Consulta o pagamento diretamente na API do Mercado Pago.
+
+    O webhook apenas avisa que algo mudou.
+    A informação confiável sobre o pagamento vem desta consulta.
+    """
+
+    if not MP_ACCESS_TOKEN:
+        raise RuntimeError(
+            "MP_ACCESS_TOKEN não configurado."
+        )
+
+    resposta = requests.get(
+        f"https://api.mercadopago.com/v1/payments/{payment_id}",
+        headers={
+            "Authorization": f"Bearer {MP_ACCESS_TOKEN}",
+            "Content-Type": "application/json"
+        },
+        timeout=15,
+        verify=VERIFY_SSL
+    )
+
+    if not resposta.ok:
+        print(
+            "Erro ao consultar pagamento:",
+            resposta.status_code,
+            resposta.text
+        )
+
+    resposta.raise_for_status()
+
+    return resposta.json()
