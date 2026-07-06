@@ -32,6 +32,27 @@ def conectar_banco():
         timeout=30
     )
 
+def garantir_coluna(cursor, tabela, coluna, definicao):
+    """
+    Adiciona uma coluna somente se ela ainda não existir.
+
+    Isso permite atualizar bancos já existentes sem apagar
+    as inscrições que já estão salvas.
+    """
+    cursor.execute(f"PRAGMA table_info({tabela})")
+
+    colunas_existentes = {
+        linha[1]
+        for linha in cursor.fetchall()
+    }
+
+    if coluna not in colunas_existentes:
+        cursor.execute(
+            f"ALTER TABLE {tabela} "
+            f"ADD COLUMN {coluna} {definicao}"
+        )
+
+        print(f"Coluna adicionada: {coluna}")
 
 def inicializar_banco():
     """
@@ -95,5 +116,33 @@ def inicializar_banco():
                     DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "preference_id",
+            "TEXT"
+        )
+
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "payment_id",
+            "TEXT"
+        )
+
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "payment_status_detail",
+            "TEXT"
+        )
+
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "data_pagamento",
+            "TEXT"
+        )
 
         conn.commit()
