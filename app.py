@@ -285,5 +285,20 @@ def pagamento_pendente():
         <a href="/">Voltar para o formulário</a>
     """
 
+# ==============================
+# WEBHOOK MERCADO PAGO
+# ==============================
+
+@app.route("/webhook/mercadopago", methods=["POST"])
+def webhook_mercado_pago():
+    dados = request.get_json(silent=True) or {}
+
+    print("\n--- WEBHOOK MERCADO PAGO RECEBIDO ---")
+    print("Query params:", request.args.to_dict())
+    print("Dados:", dados)
+    print("-------------------------------------\n")
+
+    return "", 200
+
 if __name__ == "__main__":
     app.run(debug=True)

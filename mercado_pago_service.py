@@ -11,15 +11,19 @@ SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:5000")
 APP_ENV = os.getenv("APP_ENV", "development")
 VERIFY_SSL = os.getenv("VERIFY_SSL", "true").lower() == "true"
 
-# Segurança: não permitir produção com SSL desligado
+
+# Impede produção com SSL desativado
 if APP_ENV == "production" and VERIFY_SSL is False:
     raise RuntimeError(
         "Configuração insegura: VERIFY_SSL=false não pode ser usado em produção."
     )
 
-# Apenas para ambiente local, por causa do erro SSL no Windows
+
+# Apenas para seu ambiente local atual
 if VERIFY_SSL is False:
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    urllib3.disable_warnings(
+        urllib3.exceptions.InsecureRequestWarning
+    )
 
 
 def criar_preferencia_pagamento(
@@ -33,7 +37,13 @@ def criar_preferencia_pagamento(
     tamanho_camisa
 ):
     if not MP_ACCESS_TOKEN:
-        raise RuntimeError("MP_ACCESS_TOKEN não configurado no .env")
+        raise RuntimeError(
+            "MP_ACCESS_TOKEN não configurado no arquivo .env"
+        )
+
+    # ==============================
+    # ITENS DO PAGAMENTO
+    # ==============================
 
     itens = [
         {
@@ -45,12 +55,22 @@ def criar_preferencia_pagamento(
     ]
 
     if quer_camisa == "Sim":
-        itens.append({
-            "title": f"Camisa EMEERJ 2026 - Tamanho {tamanho_camisa}",
-            "quantity": 1,
-            "currency_id": "BRL",
-            "unit_price": float(valor_camisa)
-        })
+        itens.append(
+            {
+                "title": (
+                    f"Camisa EMEERJ 2026 - "
+                    f"Tamanho {tamanho_camisa}"
+                ),
+                "quantity": 1,
+                "currency_id": "BRL",
+                "unit_price": float(valor_camisa)
+            }
+        )
+
+
+    # ==============================
+    # DADOS DA PREFERÊNCIA
+    # ==============================
 
     dados = {
         "items": itens,
@@ -60,12 +80,12 @@ def criar_preferencia_pagamento(
             "email": email
         },
 
-        # Esse campo liga o pagamento ao ID da inscrição no SQLite
+        # Liga o pagamento à inscrição no SQLite
         "external_reference": str(id_inscricao)
     }
 
-    # O Mercado Pago exige HTTPS em back_urls.
-    # Em desenvolvimento local, com http://127.0.0.1:5000, não enviamos back_urls.
+
+    # URLs de retorno somente quando o site tiver HTTPS
     if SITE_URL.startswith("https://"):
         dados["back_urls"] = {
             "success": f"{SITE_URL}/pagamento/sucesso",
@@ -74,6 +94,11 @@ def criar_preferencia_pagamento(
         }
 
         dados["auto_return"] = "approved"
+
+
+    # ==============================
+    # REQUISIÇÃO AO MERCADO PAGO
+    # ==============================
 
     resposta = requests.post(
         "https://api.mercadopago.com/checkout/preferences",
@@ -86,25 +111,35 @@ def criar_preferencia_pagamento(
         verify=VERIFY_SSL
     )
 
+
+    # Mostra a resposta completa caso dê erro
     if not resposta.ok:
-        print("Erro Mercado Pago:")
+        print("\n--- ERRO MERCADO PAGO ---")
         print("Status:", resposta.status_code)
         print("Resposta:", resposta.text)
+        print("---------------------------\n")
 
     resposta.raise_for_status()
 
+
+    # ==============================
+    # LINK DO CHECKOUT
+    # ==============================
+
     resposta_json = resposta.json()
 
-    if MP_ACCESS_TOKEN.startswith("TEST-"):
-        link_pagamento = resposta_json.get("sandbox_init_point")
-    else:
-        link_pagamento = resposta_json.get("init_point")
+    link_pagamento = resposta_json.get("init_point")
 
     if not link_pagamento:
-        raise RuntimeError("Mercado Pago não retornou link de pagamento.")
+        raise RuntimeError(
+            "Mercado Pago não retornou o link de pagamento."
+        )
 
-        if not link_pagamento:
-            raise RuntimeError("Mercado Pago não retornou link de pagamento.")
+    print("\n--- MERCADO PAGO ---")
+    print("Preferência:", resposta_json.get("id"))
+    print("Link do checkout:", link_pagamento)
+    print("--------------------\n")
+
 
     return {
         "id_preferencia": resposta_json.get("id"),
