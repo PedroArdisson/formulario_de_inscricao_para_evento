@@ -15,7 +15,10 @@ from mercado_pago_service import (
     consultar_pagamento
 )
 
-from sheets_service import enviar_inscricao_para_planilha
+from sheets_service import (
+    enviar_inscricao_para_planilha,
+    atualizar_pagamento_na_planilha
+)
 from database import conectar_banco, inicializar_banco
 
 
@@ -523,9 +526,24 @@ def webhook_mercado_pago():
 
             conn.commit()
 
-        print(
+            print(
             f"Inscrição {id_inscricao} atualizada: "
             f"{status_local}"
+        )
+
+        resultado_planilha = (
+            atualizar_pagamento_na_planilha(
+                id_inscricao=id_inscricao,
+                status_pagamento=status_local,
+                payment_id=payment_id,
+                payment_status_detail=status_detail,
+                data_pagamento=data_aprovacao
+            )
+        )
+
+        print(
+            "Pagamento atualizado no Google Sheets:",
+            resultado_planilha
         )
 
         return "", 200

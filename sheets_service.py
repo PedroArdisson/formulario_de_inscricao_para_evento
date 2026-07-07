@@ -43,3 +43,44 @@ def enviar_inscricao_para_planilha(dados):
     resposta.raise_for_status()
 
     return resposta.json()
+
+def atualizar_pagamento_na_planilha(
+    id_inscricao,
+    status_pagamento,
+    payment_id,
+    payment_status_detail,
+    data_pagamento
+):
+    """
+    Atualiza os dados de pagamento de uma inscrição
+    já existente no Google Sheets.
+    """
+
+    dados = {
+        "secret": SECRET,
+        "acao": "atualizar_pagamento",
+        "id": id_inscricao,
+        "status_pagamento": status_pagamento,
+        "payment_id": payment_id,
+        "payment_status_detail": payment_status_detail,
+        "data_pagamento": data_pagamento
+    }
+
+    resposta = requests.post(
+        APPS_SCRIPT_URL,
+        json=dados,
+        timeout=20,
+        verify=VERIFY_SSL
+    )
+
+    resposta.raise_for_status()
+
+    resultado = resposta.json()
+
+    if not resultado.get("ok"):
+        raise RuntimeError(
+            "Erro ao atualizar Google Sheets: "
+            f"{resultado}"
+        )
+
+    return resultado
