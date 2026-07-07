@@ -65,6 +65,7 @@ def inicializar_banco():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS inscricoes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cpf TEXT NOT NULL,
 
                 nome_completo TEXT NOT NULL,
                 email TEXT NOT NULL,
@@ -144,5 +145,20 @@ def inicializar_banco():
             "data_pagamento",
             "TEXT"
         )
+        
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "cpf",
+            "TEXT"
+        )
+        
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            idx_inscricoes_cpf
+            ON inscricoes (cpf)
+            WHERE cpf IS NOT NULL
+              AND TRIM(cpf) <> ''
+        """)
 
         conn.commit()

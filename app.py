@@ -2,6 +2,12 @@ import os
 from decimal import Decimal
 from datetime import datetime
 
+from validacoes import (
+    normalizar_cpf,
+    cpf_valido,
+    mascarar_cpf
+)
+
 from flask import Flask, render_template, request, redirect
 from dotenv import load_dotenv
 
@@ -42,6 +48,54 @@ def receber_inscricao():
     # Dados básicos
     nome_completo = request.form.get("nome_completo")
     email = request.form.get("email")
+    cpf = normalizar_cpf(request.form.get("cpf", ""))
+    if not cpf_valido(cpf):
+        return (
+            "CPF inválido. "
+            "Volte e informe um CPF válido.",
+            400
+        )
+        # Verifica se já existe uma inscrição para este CPF
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                id,
+                nome_social,
+                email,
+                status_pagamento
+            FROM inscricoes
+            WHERE cpf = ?
+            """,
+            (cpf,)
+        )
+
+        inscricao_existente = cursor.fetchone()
+
+    if inscricao_existente:
+        (
+            id_existente,
+            nome_social_existente,
+            email_existente,
+            status_existente
+        ) = inscricao_existente
+
+        if status_existente == "APROVADO":
+            return (
+                f"Já existe uma inscrição confirmada "
+                f"para este CPF. "
+                f"Inscrição #{id_existente}.",
+                409
+            )
+
+        return (
+            f"Já existe uma inscrição pendente "
+            f"para este CPF. "
+            f"Inscrição #{id_existente}.",
+            409
+        )
     nome_social = request.form.get("nome_social")
     idade = request.form.get("idade")
     genero = request.form.get("genero")
@@ -105,6 +159,7 @@ def receber_inscricao():
         INSERT INTO inscricoes (
             nome_completo,
             email,
+            cpf,
             nome_social,
             idade,
             genero,
@@ -147,10 +202,11 @@ def receber_inscricao():
             termo_lgpd,
             data_inscricao
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         nome_completo,
         email,
+        cpf,
         nome_social,
         idade,
         genero,
@@ -205,6 +261,7 @@ def receber_inscricao():
         "data_inscricao": data_inscricao,
         "nome_completo": nome_completo,
         "email": email,
+        "cpf_mascarado": mascarar_cpf(cpf),
         "nome_social": nome_social,
         "idade": idade,
         "genero": genero,
