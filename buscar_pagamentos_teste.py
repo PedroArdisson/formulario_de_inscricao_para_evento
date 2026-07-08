@@ -21,7 +21,7 @@ if not MP_ACCESS_TOKEN:
 
 
 # IDs das inscrições que apareceram nos seus últimos logs.
-ids_inscricoes = ["8"]
+ids_inscricoes = ["11"]
 
 
 for id_inscricao in ids_inscricoes:

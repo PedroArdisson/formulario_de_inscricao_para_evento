@@ -1,12 +1,19 @@
-import requests
-import urllib3
+import os
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import requests
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+APPS_SCRIPT_URL = os.getenv("APPS_SCRIPT_URL")
+SHEETS_SECRET = os.getenv("SHEETS_SECRET")
+
 
 url = "https://script.google.com/macros/s/AKfycbym5Gpvhofrzh471HX---q2PH8Ul-TKtFMnJQNwp_aHxIEUQKiusAacgI1TtE9w-20/exec"
 
 dados_teste = {
-    "secret": "emeerj-2026-chave-teste",
+    "secret": SHEETS_SECRET,
     "id": 999,
     "data_inscricao": "23/06/2026 14:00:00",
     "nome_completo": "Teste Google Sheets",
