@@ -635,11 +635,16 @@ def webhook_mercado_pago():
 
         return "", 500
     
+      # ==============================
+      # 8. CONTINUA PAGAMENTO
+      # ==============================
+    
 @app.route(
     "/continuar-pagamento",
     methods=["POST"]
 )
 def continuar_pagamento():
+
     cpf = normalizar_cpf(
         request.form.get("cpf", "")
     )
@@ -665,10 +670,16 @@ def continuar_pagamento():
         cursor.execute(
             """
             SELECT
+                id,
+                nome_completo,
                 nome_social,
                 email,
                 status_pagamento,
-                link_pagamento
+                valor_inscricao,
+                valor_camisa,
+                valor_total,
+                quer_camisa,
+                tamanho_camisa
             FROM inscricoes
             WHERE cpf = ?
             """,
@@ -684,10 +695,16 @@ def continuar_pagamento():
         ), 404
 
     (
+        id_inscricao,
+        nome_completo,
         nome_social,
         email_cadastrado,
         status_pagamento,
-        link_pagamento
+        valor_inscricao,
+        valor_camisa,
+        valor_total,
+        quer_camisa,
+        tamanho_camisa
     ) = inscricao
 
     if (
@@ -697,8 +714,8 @@ def continuar_pagamento():
         return render_template(
             "inscricao_existente.html",
             erro=(
-                "Os dados informados não correspondem "
-                "a uma inscrição."
+                "Os dados informados não "
+                "correspondem a uma inscrição."
             )
         ), 403
 
@@ -712,16 +729,151 @@ def continuar_pagamento():
             email=email_cadastrado
         )
 
-    if not link_pagamento:
+    try:
+        # Cria um checkout novo.
+        pagamento = criar_preferencia_pagamento(
+            id_inscricao=id_inscricao,
+            nome_completo=nome_completo,
+            email=email_cadastrado,
+            valor_inscricao=valor_inscricao,
+            valor_camisa=valor_camisa,
+            valor_total=valor_total,
+            quer_camisa=quer_camisa,
+            tamanho_camisa=tamanho_camisa
+        )
+
+        # Salva a nova preferência e o novo link.
+        with conectar_banco() as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                UPDATE inscricoes
+                SET
+                    preference_id = ?,
+                    link_pagamento = ?
+                WHERE id = ?
+                """,
+                (
+                    pagamento["id_preferencia"],
+                    pagamento["link_pagamento"],
+                    id_inscricao
+                )
+            )
+
+            conn.commit()
+
+        return redirect(
+            pagamento["link_pagamento"]
+        )
+
+    except Exception as erro:
+        print(
+            "Erro ao continuar pagamento:",
+            repr(erro)
+        )
+
         return render_template(
             "inscricao_existente.html",
             erro=(
-                "Não foi possível recuperar o link "
-                "de pagamento. Tente novamente mais tarde."
+                "Não foi possível gerar o pagamento "
+                "agora. Tente novamente mais tarde."
             )
         ), 500
 
-    return redirect(link_pagamento)
+@app.route(
+    "/consultar-inscricao",
+    methods=["GET", "POST"]
+)
+def consultar_inscricao():
+
+    if request.method == "GET":
+        return render_template(
+            "consultar_inscricao.html",
+            erro=None
+        )
+
+    cpf = normalizar_cpf(
+        request.form.get("cpf", "")
+    )
+
+    email = (
+        request.form.get("email", "")
+        .strip()
+        .lower()
+    )
+
+    if not cpf_valido(cpf):
+        return render_template(
+            "consultar_inscricao.html",
+            erro=(
+                "Informe um CPF válido."
+            )
+        )
+
+    if not email:
+        return render_template(
+            "consultar_inscricao.html",
+            erro=(
+                "Informe o e-mail utilizado "
+                "na inscrição."
+            )
+        )
+
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                nome_social,
+                email,
+                status_pagamento
+            FROM inscricoes
+            WHERE cpf = ?
+            """,
+            (cpf,)
+        )
+
+        inscricao = cursor.fetchone()
+
+    # Resposta propositalmente genérica.
+    # Não diz se o CPF ou o e-mail foi o incorreto.
+    if not inscricao:
+        return render_template(
+            "consultar_inscricao.html",
+            erro=(
+                "Não encontramos uma inscrição "
+                "com os dados informados."
+            )
+        )
+
+    (
+        nome_social,
+        email_cadastrado,
+        status_pagamento
+    ) = inscricao
+
+    if (
+        email
+        != email_cadastrado.strip().lower()
+    ):
+        return render_template(
+            "consultar_inscricao.html",
+            erro=(
+                "Não encontramos uma inscrição "
+                "com os dados informados."
+            )
+        )
+
+    return render_template(
+        "inscricao_existente.html",
+        erro=None,
+        nome_social=nome_social,
+        status_pagamento=status_pagamento,
+        cpf=cpf,
+        email=email_cadastrado
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

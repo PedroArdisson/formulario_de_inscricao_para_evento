@@ -20,6 +20,24 @@
     <main class="container">
 
         <form id="formInscricao" action="/inscricao" method="post">
+
+            <div class="acesso-consulta">
+
+                <p class="acesso-consulta-titulo">
+                    Já fez sua inscrição?
+                </p>
+
+                <p class="acesso-consulta-texto">
+                    Se você já se inscreveu, pode consultar sua inscrição
+                    ou continuar o pagamento por aqui.
+                </p>
+
+                <a href="{{ url_for('consultar_inscricao') }}" class="botao-consulta">
+                    Consultar inscrição ou continuar pagamento
+                </a>
+
+            </div>
+
             <!-- DADOS PESSOAIS DO PARTICIPANTE -->
             <div class="form-group">
                 <label for="nomeCompleto">Nome completo do participante</label>

@@ -1,0 +1,72 @@
+.pagina-consulta {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.card-consulta {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px 32px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-consulta h1 {
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.card-consulta > p {
+    margin-bottom: 28px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.campo-consulta {
+    margin-bottom: 20px;
+}
+
+.campo-consulta label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.campo-consulta input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font: inherit;
+    box-sizing: border-box;
+}
+
+.botao-consultar {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #222222;
+    color: #ffffff;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.voltar-formulario {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.mensagem-erro {
+    margin-bottom: 20px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff3cd;
+    line-height: 1.5;
+}
