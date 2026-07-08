@@ -109,6 +109,8 @@ def inicializar_banco():
 
                 status_pagamento TEXT NOT NULL
                     DEFAULT 'PENDENTE',
+                    
+                link_pagamento TEXT,
 
                 termo_lgpd TEXT NOT NULL
                     DEFAULT 'Sim',
@@ -143,6 +145,13 @@ def inicializar_banco():
             cursor,
             "inscricoes",
             "data_pagamento",
+            "TEXT"
+        )
+        
+        garantir_coluna(
+            cursor,
+            "inscricoes",
+            "link_pagamento",
             "TEXT"
         )
         

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Inscrição EMEERJ 2026</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inscricao_existente.css') }}">
+</head>
+
+<body>
+
+    <main class="pagina-status">
+
+        <section class="card-status">
+
+            {% if erro %}
+
+            <div class="icone-status icone-atencao">
+                !
+            </div>
+
+            <h1>Não foi possível continuar</h1>
+
+            <p>
+                {{ erro }}
+            </p>
+
+            <a href="/" class="botao-secundario">
+                Voltar ao formulário
+            </a>
+
+            {% elif status_pagamento == "APROVADO" %}
+
+            <div class="icone-status icone-sucesso">
+                ✓
+            </div>
+
+            <h1>Inscrição confirmada!</h1>
+
+            <p>
+                Olá,
+                <strong>{{ nome_social }}</strong>.
+            </p>
+
+            <p>
+                Sua inscrição no EMEERJ 2026 já está
+                confirmada.
+            </p>
+
+            <div class="status-pagamento aprovado">
+                Pagamento aprovado
+            </div>
+
+            {% else %}
+
+            <div class="icone-status icone-pendente">
+                !
+            </div>
+
+            <h1>Encontramos sua inscrição</h1>
+
+            <p>
+                Olá,
+                <strong>{{ nome_social }}</strong>.
+            </p>
+
+            <p>
+                Você já possui uma inscrição no EMEERJ
+                2026, mas o pagamento ainda está pendente.
+            </p>
+
+            <div class="status-pagamento pendente">
+                Pagamento pendente
+            </div>
+
+            <form method="POST" action="{{ url_for('continuar_pagamento') }}">
+                <input type="hidden" name="cpf" value="{{ cpf }}">
+
+                <input type="hidden" name="email" value="{{ email }}">
+
+                <button type="submit" class="botao-principal">
+                    Continuar pagamento
+                </button>
+            </form>
+
+            <p class="aviso">
+                Você será redirecionado para o
+                Mercado Pago.
+            </p>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+.pagina-status {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.card-status {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px 32px;
+    text-align: center;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-status h1 {
+    margin: 20px 0 16px;
+}
+
+.card-status p {
+    line-height: 1.6;
+}
+
+.icone-status {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.icone-sucesso {
+    background: #dff7e7;
+}
+
+.icone-pendente,
+.icone-atencao {
+    background: #fff3cd;
+}
+
+.status-pagamento {
+    margin: 24px 0;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.status-pagamento.aprovado {
+    background: #dff7e7;
+}
+
+.status-pagamento.pendente {
+    background: #fff3cd;
+}
+
+.botao-principal,
+.botao-secundario {
+    display: inline-block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.botao-principal {
+    background: #222222;
+    color: #ffffff;
+}
+
+.botao-secundario {
+    width: auto;
+    background: #eeeeee;
+    color: #222222;
+}
+
+.aviso {
+    margin-top: 16px;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}

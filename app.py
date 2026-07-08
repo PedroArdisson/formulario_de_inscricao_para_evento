@@ -55,17 +55,21 @@ def receber_inscricao():
             "Volte e informe um CPF válido.",
             400
         )
-        # Verifica se já existe uma inscrição para este CPF
+
+    # =====================================
+    # VERIFICAR INSCRIÇÃO JÁ EXISTENTE
+    # =====================================
+
     with conectar_banco() as conn:
         cursor = conn.cursor()
 
         cursor.execute(
             """
             SELECT
-                id,
                 nome_social,
                 email,
-                status_pagamento
+                status_pagamento,
+                link_pagamento
             FROM inscricoes
             WHERE cpf = ?
             """,
@@ -76,25 +80,39 @@ def receber_inscricao():
 
     if inscricao_existente:
         (
-            id_existente,
             nome_social_existente,
             email_existente,
-            status_existente
+            status_existente,
+            link_pagamento_existente
         ) = inscricao_existente
 
-        if status_existente == "APROVADO":
-            return (
-                f"Já existe uma inscrição confirmada "
-                f"para este CPF. "
-                f"Inscrição #{id_existente}.",
-                409
-            )
+        email_informado = email.strip().lower()
 
-        return (
-            f"Já existe uma inscrição pendente "
-            f"para este CPF. "
-            f"Inscrição #{id_existente}.",
-            409
+        email_cadastrado = (
+            email_existente
+            .strip()
+            .lower()
+        )
+
+        # O CPF existe, mas o e-mail não corresponde.
+        if email_informado != email_cadastrado:
+            return render_template(
+                "inscricao_existente.html",
+                erro=(
+                    "Já existe uma inscrição vinculada "
+                    "a este CPF, mas o e-mail informado "
+                    "não corresponde ao e-mail cadastrado."
+                )
+            ), 409
+
+        # CPF e e-mail correspondem.
+        return render_template(
+            "inscricao_existente.html",
+            erro=None,
+            nome_social=nome_social_existente,
+            status_pagamento=status_existente,
+            cpf=cpf,
+            email=email_existente
         )
     nome_social = request.form.get("nome_social")
     idade = request.form.get("idade")
@@ -321,17 +339,21 @@ def receber_inscricao():
 
         print("Preferência criada no Mercado Pago:")
         print(pagamento)
+        
         with conectar_banco() as conn:
             cursor = conn.cursor()
 
             cursor.execute(
                 """
                 UPDATE inscricoes
-                SET preference_id = ?
+                SET
+                    preference_id = ?,
+                    link_pagamento = ?
                 WHERE id = ?
                 """,
                 (
                     pagamento["id_preferencia"],
+                    pagamento["link_pagamento"],
                     id_inscricao
                 )
             )
@@ -612,6 +634,96 @@ def webhook_mercado_pago():
         )
 
         return "", 500
+    
+@app.route(
+    "/continuar-pagamento",
+    methods=["POST"]
+)
+def continuar_pagamento():
+    cpf = normalizar_cpf(
+        request.form.get("cpf", "")
+    )
+
+    email = (
+        request.form.get("email", "")
+        .strip()
+        .lower()
+    )
+
+    if not cpf or not email:
+        return render_template(
+            "inscricao_existente.html",
+            erro=(
+                "Não foi possível identificar "
+                "sua inscrição."
+            )
+        ), 400
+
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                nome_social,
+                email,
+                status_pagamento,
+                link_pagamento
+            FROM inscricoes
+            WHERE cpf = ?
+            """,
+            (cpf,)
+        )
+
+        inscricao = cursor.fetchone()
+
+    if not inscricao:
+        return render_template(
+            "inscricao_existente.html",
+            erro="Inscrição não encontrada."
+        ), 404
+
+    (
+        nome_social,
+        email_cadastrado,
+        status_pagamento,
+        link_pagamento
+    ) = inscricao
+
+    if (
+        email
+        != email_cadastrado.strip().lower()
+    ):
+        return render_template(
+            "inscricao_existente.html",
+            erro=(
+                "Os dados informados não correspondem "
+                "a uma inscrição."
+            )
+        ), 403
+
+    if status_pagamento == "APROVADO":
+        return render_template(
+            "inscricao_existente.html",
+            erro=None,
+            nome_social=nome_social,
+            status_pagamento="APROVADO",
+            cpf=cpf,
+            email=email_cadastrado
+        )
+
+    if not link_pagamento:
+        return render_template(
+            "inscricao_existente.html",
+            erro=(
+                "Não foi possível recuperar o link "
+                "de pagamento. Tente novamente mais tarde."
+            )
+        ), 500
+
+    return redirect(link_pagamento)
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
+    
