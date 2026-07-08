@@ -14,29 +14,29 @@
 
     <header class="hero">
         <h1>EMEERJ 2026</h1>
-        <p>Desligaram a internet, quem sou eu?</p>
+        <p>Desligaram o Wi-Fi, quem sou eu?</p>
     </header>
 
     <main class="container">
 
-        <form id="formInscricao" action="/inscricao" method="post">
+        <div class="acesso-consulta">
 
-            <div class="acesso-consulta">
+            <p class="acesso-consulta-titulo">
+                Já fez sua inscrição?
+            </p>
 
-                <p class="acesso-consulta-titulo">
-                    Já fez sua inscrição?
-                </p>
+            <p class="acesso-consulta-texto">
+                Se você já se inscreveu, pode consultar sua inscrição
+                ou continuar o pagamento por aqui.
+            </p>
 
-                <p class="acesso-consulta-texto">
-                    Se você já se inscreveu, pode consultar sua inscrição
-                    ou continuar o pagamento por aqui.
-                </p>
+            <a href="{{ url_for('consultar_inscricao') }}" class="botao-consulta">
+                Consultar inscrição ou continuar pagamento
+            </a>
 
-                <a href="{{ url_for('consultar_inscricao') }}" class="botao-consulta">
-                    Consultar inscrição ou continuar pagamento
-                </a>
+        </div>
 
-            </div>
+        <form id="formInscricao" action="{{ url_for('receber_inscricao') }}" method="post">
 
             <!-- DADOS PESSOAIS DO PARTICIPANTE -->
             <div class="form-group">
@@ -45,8 +45,11 @@
             </div>
 
             <div class="form-group">
-                <label for="email">E-mail</label>
+                <label for="email">E-mail para contato e consulta de inscrição</label>
                 <input type="email" id="email" name="email" required>
+                <small class="ajuda-campo">
+                    Pode ser utilizado o e-mail do responsável.
+                </small>
             </div>
 
             <div class="form-group">
@@ -57,8 +60,11 @@
             </div>
 
             <div class="form-group">
-                <label for="nomeSocial">Nome social / Nome para o crachá</label>
+                <label for="nomeSocial">Nome para o crachá</label>
                 <input type="text" id="nomeSocial" name="nome_social" required>
+                <small class="ajuda-campo">
+                    Você pode informar seu nome social ou a forma como prefere ser chamado.
+                </small>
             </div>
 
             <div class="form-group">
@@ -151,7 +157,7 @@
 
                 <div class="radio-group">
                     <label>
-                        <input type="radio" name="possui_alergia" value="Sim">
+                        <input type="radio" name="possui_alergia" value="Sim" required>
                         Sim
                     </label>
 
@@ -285,14 +291,19 @@
                     <option value="Alimentação">Alimentação</option>
                 </select>
             </div>
-            <!-- CAMISA E RESUMO DO PAGAMENTO -->
+            <!-- INTERESSE NA CAMISA E PAGAMENTO -->
+            <h2 class="titulo-secao">
+                Camisa e pagamento
+            </h2>
+
             <div class="form-group">
+
                 <label>
-                    Gostaria da camisa do evento?
-                    <span class="observacao">(Valor provisório: R$ 40,00)</span>
+                    Você tem interesse em adquirir a camisa do evento?
                 </label>
 
                 <div class="radio-group">
+
                     <label>
                         <input type="radio" name="quer_camisa" value="Sim" required>
                         Sim
@@ -302,11 +313,15 @@
                         <input type="radio" name="quer_camisa" value="Não">
                         Não
                     </label>
+
                 </div>
+
             </div>
 
             <div class="form-group hidden" id="camisaContainer">
-                <label for="tamanhoCamisa">Tamanho da camisa</label>
+                <label for="tamanhoCamisa">
+                    Qual tamanho você teria interesse em adquirir?
+                </label>
 
                 <select id="tamanhoCamisa" name="tamanho_camisa">
                     <option value="">Selecione</option>
@@ -319,9 +334,15 @@
             </div>
 
             <div class="resumo-pagamento">
-                <p>Inscrição: <strong>R$ 25,00</strong></p>
-                <p>Camisa: <strong id="valorCamisaTexto">R$ 0,00</strong></p>
-                <p>Total: <strong id="valorTotalTexto">R$ 25,00</strong></p>
+                <p>
+                    Valor da inscrição:
+                    <strong>R$ 25,00</strong>
+                </p>
+
+                <p>
+                    Total a pagar:
+                    <strong>R$ 25,00</strong>
+                </p>
             </div>
 
             <!-- TERMO DE AUTORIZAÇÃO / LGPD -->
@@ -333,6 +354,12 @@
                     do evento EMEERJ 2026.
                 </label>
             </div>
+
+            <p class="aviso-antes-pagamento">
+                Ao continuar, você será redirecionado ao Mercado Pago.
+                Caso não conclua o pagamento agora, poderá voltar depois
+                e continuar usando seu CPF e o e-mail informado.
+            </p>
 
             <button type="submit">
                 Continuar para pagamento

@@ -35,7 +35,6 @@ app = Flask(__name__)
 inicializar_banco()
 
 VALOR_INSCRICAO = 25
-VALOR_CAMISA = 40  # Valor provisório
 
 
 @app.route("/")
@@ -152,19 +151,23 @@ def receber_inscricao():
     tipo_participacao = request.form.get("tipo_participacao")
     area_trabalho = request.form.get("area_trabalho")
 
-    # Camisa
+    # Interesse na camisa
     quer_camisa = request.form.get("quer_camisa")
     tamanho_camisa = request.form.get("tamanho_camisa")
 
+    # A camisa é apenas uma pesquisa de interesse.
+    # Ela não é vendida nem cobrada neste formulário.
+    if quer_camisa != "Sim":
+        tamanho_camisa = None
+
     valor_camisa = 0
-
-    if quer_camisa == "Sim":
-        valor_camisa = VALOR_CAMISA
-
-    valor_total = VALOR_INSCRICAO + valor_camisa
-
+    valor_total = VALOR_INSCRICAO
+    
     status_pagamento = "PENDENTE"
-    data_inscricao = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    data_inscricao = datetime.now().strftime(
+        "%d/%m/%Y %H:%M:%S"
+    )
     
     # Termo LGPD
     termo_lgpd = request.form.get("termo_lgpd")
@@ -330,11 +333,7 @@ def receber_inscricao():
             id_inscricao=id_inscricao,
             nome_completo=nome_completo,
             email=email,
-            valor_inscricao=VALOR_INSCRICAO,
-            valor_camisa=valor_camisa,
-            valor_total=valor_total,
-            quer_camisa=quer_camisa,
-            tamanho_camisa=tamanho_camisa
+            valor_inscricao=VALOR_INSCRICAO
         )
 
         print("Preferência criada no Mercado Pago:")
@@ -770,12 +769,7 @@ def continuar_pagamento():
                 nome_completo,
                 nome_social,
                 email,
-                status_pagamento,
-                valor_inscricao,
-                valor_camisa,
-                valor_total,
-                quer_camisa,
-                tamanho_camisa
+                status_pagamento
             FROM inscricoes
             WHERE cpf = ?
             """,
@@ -795,12 +789,7 @@ def continuar_pagamento():
         nome_completo,
         nome_social,
         email_cadastrado,
-        status_pagamento,
-        valor_inscricao,
-        valor_camisa,
-        valor_total,
-        quer_camisa,
-        tamanho_camisa
+        status_pagamento
     ) = inscricao
 
     if (
@@ -824,6 +813,29 @@ def continuar_pagamento():
             cpf=cpf,
             email=email_cadastrado
         )
+        
+    # Garante que inscrições pendentes antigas
+    # também usem o valor único atual de R$ 25.
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE inscricoes
+            SET
+                valor_inscricao = ?,
+                valor_camisa = 0,
+                valor_total = ?
+            WHERE id = ?
+            """,
+            (
+                VALOR_INSCRICAO,
+                VALOR_INSCRICAO,
+                id_inscricao
+            )
+        )
+
+        conn.commit()
 
     try:
         # Cria um checkout novo.
@@ -831,11 +843,7 @@ def continuar_pagamento():
             id_inscricao=id_inscricao,
             nome_completo=nome_completo,
             email=email_cadastrado,
-            valor_inscricao=valor_inscricao,
-            valor_camisa=valor_camisa,
-            valor_total=valor_total,
-            quer_camisa=quer_camisa,
-            tamanho_camisa=tamanho_camisa
+            valor_inscricao=VALOR_INSCRICAO
         )
 
         # Salva a nova preferência e o novo link.

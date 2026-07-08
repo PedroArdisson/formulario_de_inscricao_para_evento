@@ -30,11 +30,7 @@ def criar_preferencia_pagamento(
     id_inscricao,
     nome_completo,
     email,
-    valor_inscricao,
-    valor_camisa,
-    valor_total,
-    quer_camisa,
-    tamanho_camisa
+    valor_inscricao
 ):
     if not MP_ACCESS_TOKEN:
         raise RuntimeError(
@@ -45,6 +41,9 @@ def criar_preferencia_pagamento(
     # ITENS DO PAGAMENTO
     # ==============================
 
+    # O Checkout cobra apenas a inscrição.
+    # O interesse na camisa é somente uma pesquisa
+    # e não faz parte do pagamento.
     itens = [
         {
             "title": "Inscrição EMEERJ 2026",
@@ -53,19 +52,6 @@ def criar_preferencia_pagamento(
             "unit_price": float(valor_inscricao)
         }
     ]
-
-    if quer_camisa == "Sim":
-        itens.append(
-            {
-                "title": (
-                    f"Camisa EMEERJ 2026 - "
-                    f"Tamanho {tamanho_camisa}"
-                ),
-                "quantity": 1,
-                "currency_id": "BRL",
-                "unit_price": float(valor_camisa)
-            }
-        )
 
 
     # ==============================
