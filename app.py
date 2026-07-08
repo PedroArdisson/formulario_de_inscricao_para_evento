@@ -375,32 +375,128 @@ def receber_inscricao():
         status_pagamento="PENDENTE - ERRO AO GERAR PAGAMENTO"
     )
 
-@app.route("/pagamento/sucesso")
-def pagamento_sucesso():
-    return render_template(
-        "sucesso.html",
-        nome_social="Participante",
-        valor_total="",
-        status_pagamento="PAGAMENTO APROVADO"
+
+def exibir_resultado_pagamento(status_padrao):
+    """
+    Monta a página exibida depois que o usuário
+    volta do Mercado Pago.
+
+    Quando existe um payment_id, consulta o pagamento
+    diretamente na API do Mercado Pago.
+    """
+
+    payment_id = (
+        request.args.get("payment_id")
+        or request.args.get("collection_id")
     )
 
+    external_reference = request.args.get(
+        "external_reference"
+    )
+
+    status_local = status_padrao
+
+    # Se o Mercado Pago enviou um payment_id,
+    # consultamos o pagamento real na API.
+    if payment_id:
+        try:
+            pagamento = consultar_pagamento(
+                payment_id
+            )
+
+            status_mp = pagamento.get("status")
+
+            external_reference = pagamento.get(
+                "external_reference"
+            )
+
+            mapa_status = {
+                "approved": "APROVADO",
+                "pending": "PENDENTE",
+                "in_process": "PENDENTE",
+                "authorized": "AUTORIZADO",
+                "rejected": "RECUSADO",
+                "cancelled": "CANCELADO",
+                "refunded": "REEMBOLSADO",
+                "charged_back": "ESTORNADO"
+            }
+
+            status_local = mapa_status.get(
+                status_mp,
+                str(status_mp).upper()
+            )
+
+        except Exception as erro:
+            print(
+                "Erro ao consultar pagamento "
+                "na página de retorno:",
+                repr(erro)
+            )
+
+    nome_social = "Participante"
+    valor_total = None
+
+    # Busca os dados da inscrição no SQLite.
+    if external_reference:
+        try:
+            id_inscricao = int(
+                external_reference
+            )
+
+            with conectar_banco() as conn:
+                cursor = conn.cursor()
+
+                cursor.execute(
+                    """
+                    SELECT
+                        nome_social,
+                        valor_total
+                    FROM inscricoes
+                    WHERE id = ?
+                    """,
+                    (id_inscricao,)
+                )
+
+                inscricao = cursor.fetchone()
+
+            if inscricao:
+                nome_social = inscricao[0]
+
+                valor_total = (
+                    f"{inscricao[1]:.2f}"
+                    .replace(".", ",")
+                )
+
+        except (TypeError, ValueError):
+            print(
+                "external_reference inválida:",
+                external_reference
+            )
+
+    return render_template(
+        "sucesso.html",
+        nome_social=nome_social,
+        status_pagamento=status_local,
+        valor_total=valor_total
+    )
+
+@app.route("/pagamento/sucesso")
+def pagamento_sucesso():
+    return exibir_resultado_pagamento(
+        "APROVADO"
+    )
 
 @app.route("/pagamento/falha")
 def pagamento_falha():
-    return """
-        <h1>Pagamento não concluído</h1>
-        <p>Não conseguimos confirmar seu pagamento.</p>
-        <a href="/">Voltar para o formulário</a>
-    """
-
+    return exibir_resultado_pagamento(
+        "RECUSADO"
+    )
 
 @app.route("/pagamento/pendente")
 def pagamento_pendente():
-    return """
-        <h1>Pagamento pendente</h1>
-        <p>Seu pagamento ainda está aguardando confirmação.</p>
-        <a href="/">Voltar para o formulário</a>
-    """
+    return exibir_resultado_pagamento(
+        "PENDENTE"
+    )
 
 # ==============================
 # WEBHOOK MERCADO PAGO

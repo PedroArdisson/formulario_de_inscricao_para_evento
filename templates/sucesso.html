@@ -3,11 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inscrição Recebida - EMEERJ 2026</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sucesso.css') }}">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pagamento - EMEERJ 2026</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/sucesso.css') }}"
+    >
 </head>
 
 <body>
@@ -16,35 +28,133 @@
 
         <section class="sucesso-card">
 
-            <div class="sucesso-icone">
-                ✓
-            </div>
+            {% if status_pagamento == "APROVADO" %}
 
-            <h1>Inscrição recebida!</h1>
+                <div class="sucesso-icone aprovado">
+                    ✓
+                </div>
 
-            <p class="sucesso-mensagem">
-                Obrigado, <strong>{{ nome_social }}</strong>. Sua inscrição foi registrada com sucesso.
-            </p>
-
-            <div class="sucesso-info">
-                <p>
-                    <span>Status:</span>
-                    <strong>{{ status_pagamento }}</strong>
+                <p class="sucesso-etiqueta">
+                    Pagamento confirmado
                 </p>
 
-                <p>
-                    <span>Valor total:</span>
-                    <strong>R$ {{ valor_total }}</strong>
+                <h1>Sua inscrição está confirmada!</h1>
+
+                <p class="sucesso-mensagem">
+                    Obrigado,
+                    <strong>{{ nome_social }}</strong>.
                 </p>
+
+                <p class="sucesso-mensagem">
+                    Recebemos a confirmação do seu pagamento
+                    e sua inscrição no EMEERJ 2026 está garantida.
+                </p>
+
+                <div class="status-box aprovado">
+                    <span>Status do pagamento</span>
+                    <strong>APROVADO</strong>
+                </div>
+
+
+            {% elif status_pagamento == "PENDENTE" %}
+
+                <div class="sucesso-icone pendente">
+                    ⏳
+                </div>
+
+                <p class="sucesso-etiqueta">
+                    Aguardando confirmação
+                </p>
+
+                <h1>Seu pagamento está sendo processado</h1>
+
+                <p class="sucesso-mensagem">
+                    Olá,
+                    <strong>{{ nome_social }}</strong>.
+                </p>
+
+                <p class="sucesso-mensagem">
+                    Sua inscrição foi recebida, mas ainda estamos
+                    aguardando a confirmação do pagamento.
+                </p>
+
+                <div class="status-box pendente">
+                    <span>Status do pagamento</span>
+                    <strong>PENDENTE</strong>
+                </div>
+
+                <p class="sucesso-aviso">
+                    Você pode consultar o status da sua inscrição
+                    novamente mais tarde.
+                </p>
+
+
+            {% else %}
+
+                <div class="sucesso-icone falha">
+                    !
+                </div>
+
+                <p class="sucesso-etiqueta">
+                    Pagamento não concluído
+                </p>
+
+                <h1>Não conseguimos confirmar o pagamento</h1>
+
+                <p class="sucesso-mensagem">
+                    Sua inscrição continua salva e você pode
+                    tentar o pagamento novamente.
+                </p>
+
+                <div class="status-box falha">
+                    <span>Status do pagamento</span>
+                    <strong>
+                        {{ status_pagamento or "NÃO CONCLUÍDO" }}
+                    </strong>
+                </div>
+
+                <a
+                    href="{{ url_for('consultar_inscricao') }}"
+                    class="btn-principal"
+                >
+                    Consultar inscrição e tentar novamente
+                </a>
+
+            {% endif %}
+
+
+            {% if valor_total %}
+
+                <div class="sucesso-valor">
+
+                    <span>Valor total</span>
+
+                    <strong>
+                        R$ {{ valor_total }}
+                    </strong>
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="sucesso-acoes">
+
+                <a
+                    href="{{ url_for('consultar_inscricao') }}"
+                    class="btn-principal"
+                >
+                    Consultar minha inscrição
+                </a>
+
+                <a
+                    href="/"
+                    class="btn-voltar"
+                >
+                    Voltar ao início
+                </a>
+
             </div>
-
-            <p class="sucesso-aviso">
-                Sua inscrição ficará como <strong>pendente</strong> até a confirmação do pagamento.
-            </p>
-
-            <a href="/" class="btn-voltar">
-                Voltar para o formulário
-            </a>
 
         </section>
 
