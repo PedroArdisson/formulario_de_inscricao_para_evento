@@ -1,22 +1,6 @@
-.hidden {
-    display: none;
-}
-
-.checkbox-group,
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.checkbox-group label,
-.radio-group label {
-    font-weight: normal;
-}
-
-.form-group input + input {
-    margin-top: 10px;
-}
+/* ==============================
+   RESET E CONFIGURAÇÕES GERAIS
+============================== */
 
 * {
     margin: 0;
@@ -29,6 +13,11 @@ body {
     background: #f4f6f8;
     color: #222;
 }
+
+
+/* ==============================
+   CABEÇALHO
+============================== */
 
 .hero {
     background: linear-gradient(135deg, #163c7a, #1f7a8c);
@@ -46,14 +35,27 @@ body {
     font-size: 1.3rem;
 }
 
+
+/* ==============================
+   CONTAINER PRINCIPAL
+============================== */
+
 .container {
     max-width: 850px;
     margin: 40px auto;
-    background: white;
     padding: 35px;
+
+    background: white;
     border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.1);
 }
+
+
+/* ==============================
+   FORMULÁRIO
+============================== */
 
 .form-group {
     margin-bottom: 22px;
@@ -61,8 +63,9 @@ body {
 
 label {
     display: block;
-    font-weight: bold;
     margin-bottom: 8px;
+
+    font-weight: bold;
 }
 
 input,
@@ -70,10 +73,39 @@ select,
 textarea {
     width: 100%;
     padding: 12px;
+
     border: 1px solid #bbb;
     border-radius: 8px;
+
+    font-family: inherit;
     font-size: 1rem;
+
+    background: #ffffff;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+
+    border-color: #1f7a8c;
+
+    box-shadow:
+        0 0 0 3px rgba(31, 122, 140, 0.15);
+}
+
+.form-group input + input {
+    margin-top: 10px;
+}
+
+
+/* ==============================
+   RADIO E CHECKBOX
+============================== */
 
 .checkbox-group,
 .radio-group {
@@ -93,65 +125,82 @@ textarea {
     margin-right: 6px;
 }
 
-.form-group input + input {
-    margin-top: 10px;
-}
+
+/* ==============================
+   CAMPOS CONDICIONAIS
+============================== */
 
 .hidden {
     display: none;
 }
 
-button {
-    width: 100%;
-    padding: 15px;
-    background: #163c7a;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    cursor: pointer;
+
+/* ==============================
+   TEXTOS DE AJUDA
+============================== */
+
+.ajuda-campo {
+    display: block;
+
+    margin-top: 7px;
+
+    font-size: 0.9rem;
+    line-height: 1.4;
+
+    color: #666;
 }
 
-button:hover {
-    background: #102d5c;
-}
+
+/* ==============================
+   RESUMO DO PAGAMENTO
+============================== */
 
 .resumo-pagamento {
-    background: #eef3f7;
-    padding: 18px;
-    border-radius: 10px;
     margin-bottom: 24px;
+    padding: 18px;
+
+    background: #eef3f7;
+    border-radius: 10px;
 }
 
 .resumo-pagamento p {
     margin-bottom: 8px;
 }
 
-.observacao {
-    font-weight: normal;
-    font-size: 0.9rem;
-    color: #666;
+.resumo-pagamento p:last-child {
+    margin-bottom: 0;
 }
 
-@media (max-width: 768px) {
-    .container {
-        margin: 20px;
-        padding: 25px;
-    }
 
-    .hero h1 {
-        font-size: 2.2rem;
-    }
+/* ==============================
+   AVISO ANTES DO PAGAMENTO
+============================== */
+
+.aviso-antes-pagamento {
+    margin: 20px 0;
+    padding: 15px;
+
+    background: #fff8e6;
+    border: 1px solid #f0d899;
+    border-radius: 10px;
+
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    color: #5f4b1d;
 }
+
 
 /* ==============================
    TERMO LGPD
 ============================== */
 
 .termo-lgpd {
-    background: #eef3f7;
     padding: 15px;
+
+    background: #eef3f7;
     border-radius: 10px;
+
     font-size: 0.95rem;
 }
 
@@ -159,49 +208,155 @@ button:hover {
     display: flex;
     align-items: flex-start;
     gap: 10px;
+
+    margin-bottom: 0;
+
     font-weight: normal;
     line-height: 1.4;
 }
 
 .termo-lgpd input {
     width: auto;
+
     margin-top: 4px;
+
+    flex-shrink: 0;
 }
+
+
+/* ==============================
+   BOTÃO PRINCIPAL
+============================== */
+
+button {
+    width: 100%;
+    padding: 15px;
+
+    background: #163c7a;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 1.1rem;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+button:hover {
+    background: #102d5c;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+
+/* ==============================
+   CONSULTAR INSCRIÇÃO
+============================== */
 
 .acesso-consulta {
     margin-bottom: 30px;
     padding: 20px;
+
     background: #f4f7fb;
+
     border: 1px solid #d9e3f0;
     border-radius: 12px;
+
     text-align: center;
 }
 
 .acesso-consulta-titulo {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
+
     font-size: 22px;
     font-weight: bold;
+
     color: #1f3c88;
 }
 
 .acesso-consulta-texto {
-    margin: 0 0 18px 0;
+    margin: 0 0 18px;
+
     font-size: 15px;
     line-height: 1.5;
+
     color: #444;
 }
 
 .botao-consulta {
     display: inline-block;
+
     padding: 12px 20px;
+
     background: #1f3c88;
     color: #ffffff;
-    text-decoration: none;
-    font-weight: bold;
+
     border-radius: 8px;
-    transition: background 0.2s ease;
+
+    font-weight: bold;
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 }
 
 .botao-consulta:hover {
     background: #162d66;
+}
+
+.botao-consulta:active {
+    transform: translateY(1px);
+}
+
+
+/* ==============================
+   RESPONSIVIDADE
+============================== */
+
+@media (max-width: 768px) {
+
+    .hero {
+        padding: 40px 18px;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .container {
+        margin: 20px 12px;
+        padding: 24px 18px;
+    }
+
+    .acesso-consulta {
+        padding: 18px 15px;
+    }
+
+    .acesso-consulta-titulo {
+        font-size: 20px;
+    }
+
+    .botao-consulta {
+        width: 100%;
+        padding: 13px 15px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
 }
