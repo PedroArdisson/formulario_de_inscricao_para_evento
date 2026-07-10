@@ -2,6 +2,8 @@ import os
 from decimal import Decimal
 from datetime import datetime
 
+from uuid import uuid4
+
 from validacoes import (
     normalizar_cpf,
     cpf_valido,
@@ -17,7 +19,7 @@ from mercadopago.webhook import (
 )
 
 from mercado_pago_service import (
-    criar_preferencia_pagamento,
+    criar_pagamento_pix,
     consultar_pagamento
 )
 
@@ -35,6 +37,30 @@ app = Flask(__name__)
 inicializar_banco()
 
 VALOR_INSCRICAO = 25
+
+def extrair_dados_pix(pagamento):
+    """
+    Extrai o QR Code e o Pix Copia e Cola
+    de um pagamento consultado no Mercado Pago.
+    """
+
+    ponto_interacao = (
+        pagamento.get("point_of_interaction")
+        or {}
+    )
+
+    dados_transacao = (
+        ponto_interacao.get("transaction_data")
+        or {}
+    )
+
+    return {
+        "qr_code": dados_transacao.get("qr_code"),
+
+        "qr_code_base64": dados_transacao.get(
+            "qr_code_base64"
+        )
+    }
 
 
 @app.route("/")
@@ -329,16 +355,25 @@ def receber_inscricao():
     print("--------------------------------\n")
 
     try:
-        pagamento = criar_preferencia_pagamento(
-            id_inscricao=id_inscricao,
-            nome_completo=nome_completo,
-            email=email,
-            valor_inscricao=VALOR_INSCRICAO
+        # A primeira tentativa de Pix usa uma chave
+        # fixa ligada ao ID da inscrição.
+        idempotency_key = (
+            f"emeerj-{id_inscricao}-pix-inicial"
         )
 
-        print("Preferência criada no Mercado Pago:")
-        print(pagamento)
-        
+        pagamento = criar_pagamento_pix(
+            id_inscricao=id_inscricao,
+            email=email,
+            cpf=cpf,
+            valor_inscricao=VALOR_INSCRICAO,
+            idempotency_key=idempotency_key
+        )
+
+        payment_id = str(
+            pagamento["payment_id"]
+        )
+
+        # Salva os dados principais do Pix.
         with conectar_banco() as conn:
             cursor = conn.cursor()
 
@@ -346,20 +381,55 @@ def receber_inscricao():
                 """
                 UPDATE inscricoes
                 SET
-                    preference_id = ?,
-                    link_pagamento = ?
+                    payment_id = ?,
+                    payment_status_detail = ?,
+                    status_pagamento = ?
                 WHERE id = ?
                 """,
                 (
-                    pagamento["id_preferencia"],
-                    pagamento["link_pagamento"],
+                    payment_id,
+                    pagamento["status_detail"],
+                    "PENDENTE",
                     id_inscricao
                 )
             )
 
             conn.commit()
 
-        return redirect(pagamento["link_pagamento"])
+        return render_template(
+            "pagamento_pix.html",
+
+            nome_social=nome_social,
+
+            valor_total=(
+                f"{VALOR_INSCRICAO:.2f}"
+                .replace(".", ",")
+            ),
+
+            payment_id=payment_id,
+
+            qr_code=pagamento["qr_code"],
+
+            qr_code_base64=(
+                pagamento["qr_code_base64"]
+            )
+        )
+
+    except Exception as erro:
+        print(
+            "Erro ao criar pagamento Pix:",
+            repr(erro)
+        )
+
+        return render_template(
+            "inscricao_existente.html",
+            erro=(
+                "Sua inscrição foi salva, mas não "
+                "foi possível gerar o Pix agora. "
+                "Use a opção de consultar inscrição "
+                "para tentar novamente."
+            )
+        ), 500
 
     except Exception as erro:
         print("Erro ao criar pagamento no Mercado Pago:")
@@ -769,7 +839,8 @@ def continuar_pagamento():
                 nome_completo,
                 nome_social,
                 email,
-                status_pagamento
+                status_pagamento,
+                payment_id
             FROM inscricoes
             WHERE cpf = ?
             """,
@@ -789,7 +860,8 @@ def continuar_pagamento():
         nome_completo,
         nome_social,
         email_cadastrado,
-        status_pagamento
+        status_pagamento,
+        payment_id
     ) = inscricao
 
     if (
@@ -837,16 +909,106 @@ def continuar_pagamento():
 
         conn.commit()
 
+        # ==============================
+    # TENTAR REUTILIZAR PIX PENDENTE
+    # ==============================
+
+    if payment_id:
+
+        try:
+            pagamento_atual = consultar_pagamento(
+                payment_id
+            )
+
+            status_mp = pagamento_atual.get(
+                "status"
+            )
+
+            # O pagamento já foi aprovado,
+            # mesmo que o webhook ainda não tenha
+            # atualizado a tela consultada.
+            if status_mp == "approved":
+
+                return redirect(
+                    "/pagamento/sucesso"
+                    f"?payment_id={payment_id}"
+                )
+
+            # Se ainda está aguardando,
+            # tentamos mostrar o mesmo QR Code.
+            if status_mp in (
+                "pending",
+                "in_process"
+            ):
+
+                dados_pix = extrair_dados_pix(
+                    pagamento_atual
+                )
+
+                if (
+                    dados_pix["qr_code"]
+                    and
+                    dados_pix["qr_code_base64"]
+                ):
+
+                    return render_template(
+                        "pagamento_pix.html",
+
+                        nome_social=nome_social,
+
+                        valor_total=(
+                            f"{VALOR_INSCRICAO:.2f}"
+                            .replace(".", ",")
+                        ),
+
+                        payment_id=str(
+                            payment_id
+                        ),
+
+                        qr_code=(
+                            dados_pix["qr_code"]
+                        ),
+
+                        qr_code_base64=(
+                            dados_pix[
+                                "qr_code_base64"
+                            ]
+                        )
+                    )
+
+        except Exception as erro:
+            print(
+                "Não foi possível reutilizar "
+                "o pagamento anterior. "
+                "Um novo Pix será criado:",
+                repr(erro)
+            )
+
+
+    # ==============================
+    # CRIAR NOVO PIX
+    # ==============================
+
     try:
-        # Cria um checkout novo.
-        pagamento = criar_preferencia_pagamento(
-            id_inscricao=id_inscricao,
-            nome_completo=nome_completo,
-            email=email_cadastrado,
-            valor_inscricao=VALOR_INSCRICAO
+        # Aqui usamos uma chave nova porque
+        # esta é uma nova tentativa de pagamento.
+        idempotency_key = (
+            f"emeerj-{id_inscricao}-"
+            f"{uuid4().hex}"
         )
 
-        # Salva a nova preferência e o novo link.
+        pagamento = criar_pagamento_pix(
+            id_inscricao=id_inscricao,
+            email=email_cadastrado,
+            cpf=cpf,
+            valor_inscricao=VALOR_INSCRICAO,
+            idempotency_key=idempotency_key
+        )
+
+        novo_payment_id = str(
+            pagamento["payment_id"]
+        )
+
         with conectar_banco() as conn:
             cursor = conn.cursor()
 
@@ -854,36 +1016,54 @@ def continuar_pagamento():
                 """
                 UPDATE inscricoes
                 SET
-                    preference_id = ?,
-                    link_pagamento = ?
+                    payment_id = ?,
+                    payment_status_detail = ?,
+                    status_pagamento = ?
                 WHERE id = ?
                 """,
                 (
-                    pagamento["id_preferencia"],
-                    pagamento["link_pagamento"],
+                    novo_payment_id,
+                    pagamento["status_detail"],
+                    "PENDENTE",
                     id_inscricao
                 )
             )
 
             conn.commit()
 
-        return redirect(
-            pagamento["link_pagamento"]
+        return render_template(
+            "pagamento_pix.html",
+
+            nome_social=nome_social,
+
+            valor_total=(
+                f"{VALOR_INSCRICAO:.2f}"
+                .replace(".", ",")
+            ),
+
+            payment_id=novo_payment_id,
+
+            qr_code=pagamento["qr_code"],
+
+            qr_code_base64=(
+                pagamento["qr_code_base64"]
+            )
         )
 
     except Exception as erro:
         print(
-            "Erro ao continuar pagamento:",
+            "Erro ao criar novo Pix:",
             repr(erro)
         )
 
         return render_template(
             "inscricao_existente.html",
             erro=(
-                "Não foi possível gerar o pagamento "
+                "Não foi possível gerar o Pix "
                 "agora. Tente novamente mais tarde."
             )
         ), 500
+
 
 @app.route(
     "/consultar-inscricao",
@@ -978,6 +1158,34 @@ def consultar_inscricao():
         cpf=cpf,
         email=email_cadastrado
     )
+    
+@app.route(
+    "/pagamento/status/<payment_id>"
+)
+def consultar_status_pagamento(payment_id):
+
+    with conectar_banco() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT status_pagamento
+            FROM inscricoes
+            WHERE payment_id = ?
+            """,
+            (payment_id,)
+        )
+
+        inscricao = cursor.fetchone()
+
+    if not inscricao:
+        return {
+            "status": "NAO_ENCONTRADO"
+        }, 404
+
+    return {
+        "status": inscricao[0]
+    }
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Pagamento por Pix - EMEERJ 2026</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/pagamento_pix.css') }}"
+    >
+</head>
+
+<body>
+
+    <main
+        class="pix-container"
+        id="paginaPix"
+        data-payment-id="{{ payment_id }}"
+    >
+
+        <section class="pix-card">
+
+            <div class="pix-cabecalho">
+
+                <p class="pix-etiqueta">
+                    EMEERJ 2026
+                </p>
+
+                <h1>Pagamento por Pix</h1>
+
+                <p class="pix-subtitulo">
+                    Olá, <strong>{{ nome_social }}</strong>.
+                    Sua inscrição foi recebida.
+                </p>
+
+            </div>
+
+
+            <div class="pix-valor">
+
+                <span>Valor da inscrição</span>
+
+                <strong>
+                    R$ {{ valor_total }}
+                </strong>
+
+            </div>
+
+
+            <div class="pix-instrucoes">
+
+                <p>
+                    Escaneie o QR Code pelo aplicativo do seu banco
+                    ou use o Pix Copia e Cola.
+                </p>
+
+            </div>
+
+
+            <div class="pix-qrcode">
+
+                <img
+                    src="data:image/png;base64,{{ qr_code_base64 }}"
+                    alt="QR Code para pagamento da inscrição"
+                >
+
+            </div>
+
+
+            <div class="pix-copia-cola">
+
+                <label for="codigoPix">
+                    Pix Copia e Cola
+                </label>
+
+                <textarea
+                    id="codigoPix"
+                    readonly
+                >{{ qr_code }}</textarea>
+
+                <button
+                    type="button"
+                    id="botaoCopiar"
+                    class="botao-copiar"
+                >
+                    Copiar código Pix
+                </button>
+
+                <p
+                    id="mensagemCopia"
+                    class="mensagem-copia"
+                    aria-live="polite"
+                ></p>
+
+            </div>
+
+
+            <div
+                class="status-pagamento"
+                id="statusPagamento"
+            >
+
+                <div class="spinner"></div>
+
+                <div>
+
+                    <strong>
+                        Aguardando confirmação do pagamento...
+                    </strong>
+
+                    <p>
+                        Esta página será atualizada automaticamente
+                        assim que o Pix for aprovado.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <p class="pix-aviso">
+
+                Não é necessário enviar comprovante.
+
+                <br>
+
+                Após o pagamento, aguarde nesta página.
+                Você será redirecionado automaticamente.
+
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <script
+        src="{{ url_for('static', filename='js/pagamento_pix.js') }}"
+    ></script>
+
+</body>
+
+</html>

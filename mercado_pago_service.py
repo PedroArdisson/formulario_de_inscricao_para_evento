@@ -132,6 +132,154 @@ def criar_preferencia_pagamento(
         "link_pagamento": link_pagamento
     }
     
+    
+def criar_pagamento_pix(
+    id_inscricao,
+    email,
+    cpf,
+    valor_inscricao,
+    idempotency_key
+):
+    """
+    Cria uma cobrança Pix diretamente pela API
+    do Mercado Pago.
+
+    Retorna os dados necessários para mostrar:
+    - QR Code
+    - Pix Copia e Cola
+    - status do pagamento
+    """
+
+    if not MP_ACCESS_TOKEN:
+        raise RuntimeError(
+            "MP_ACCESS_TOKEN não configurado."
+        )
+
+    dados = {
+        "transaction_amount": float(
+            valor_inscricao
+        ),
+
+        "description": "Inscrição EMEERJ 2026",
+
+        "payment_method_id": "pix",
+
+        # Liga o pagamento à inscrição no SQLite.
+        "external_reference": str(
+            id_inscricao
+        ),
+
+        "payer": {
+            "email": email,
+
+            "identification": {
+                "type": "CPF",
+                "number": cpf
+            }
+        }
+    }
+
+
+    resposta = requests.post(
+        "https://api.mercadopago.com/v1/payments",
+
+        headers={
+            "Authorization":
+                f"Bearer {MP_ACCESS_TOKEN}",
+
+            "Content-Type":
+                "application/json",
+
+            "X-Idempotency-Key":
+                idempotency_key
+        },
+
+        json=dados,
+
+        timeout=20,
+
+        verify=VERIFY_SSL
+    )
+
+
+    if not resposta.ok:
+        print("\n--- ERRO AO CRIAR PIX ---")
+        print("Status:", resposta.status_code)
+        print("Resposta:", resposta.text)
+        print("--------------------------\n")
+
+
+    resposta.raise_for_status()
+
+
+    pagamento = resposta.json()
+
+
+    # ==============================
+    # DADOS DO PIX
+    # ==============================
+
+    ponto_interacao = (
+        pagamento.get(
+            "point_of_interaction"
+        )
+        or {}
+    )
+
+    dados_transacao = (
+        ponto_interacao.get(
+            "transaction_data"
+        )
+        or {}
+    )
+
+    qr_code = dados_transacao.get(
+        "qr_code"
+    )
+
+    qr_code_base64 = dados_transacao.get(
+        "qr_code_base64"
+    )
+
+    ticket_url = dados_transacao.get(
+        "ticket_url"
+    )
+
+
+    if not qr_code or not qr_code_base64:
+        raise RuntimeError(
+            "Mercado Pago criou o pagamento, "
+            "mas não retornou os dados do Pix."
+        )
+
+
+    print("\n--- PIX CRIADO ---")
+    print("Payment ID:", pagamento.get("id"))
+    print("Status:", pagamento.get("status"))
+    print(
+        "Inscrição:",
+        pagamento.get("external_reference")
+    )
+    print("------------------\n")
+
+
+    return {
+        "payment_id": pagamento.get("id"),
+
+        "status": pagamento.get("status"),
+
+        "status_detail": pagamento.get(
+            "status_detail"
+        ),
+
+        "qr_code": qr_code,
+
+        "qr_code_base64": qr_code_base64,
+
+        "ticket_url": ticket_url
+    }
+    
+    
 def consultar_pagamento(payment_id):
     """
     Consulta o pagamento diretamente na API do Mercado Pago.

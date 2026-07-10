@@ -1,0 +1,394 @@
+/* ==============================
+   PALETA
+============================== */
+
+:root {
+    --fundo-pagina: #f3e2cf;
+    --fundo-card: #fffaf4;
+
+    --marrom-escuro: #4d2618;
+    --marrom-medio: #6b3824;
+    --marrom-suave: #765c4d;
+
+    --caramelo: #c87945;
+    --terracota: #b95c32;
+    --terracota-escuro: #963f24;
+
+    --borda: #d8b995;
+
+    --verde-suave: #e7f5e9;
+    --verde: #267a3f;
+}
+
+
+/* ==============================
+   RESET
+============================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7eadb 0%,
+            var(--fundo-pagina) 100%
+        );
+
+    color: var(--marrom-escuro);
+}
+
+
+/* ==============================
+   CONTAINER
+============================== */
+
+.pix-container {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 32px 20px;
+}
+
+.pix-card {
+    width: 100%;
+    max-width: 600px;
+
+    padding: 38px;
+
+    background: var(--fundo-card);
+
+    border:
+        1px solid
+        rgba(216, 185, 149, 0.75);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(77, 38, 24, 0.14);
+
+    text-align: center;
+}
+
+
+/* ==============================
+   CABEÇALHO
+============================== */
+
+.pix-etiqueta {
+    margin-bottom: 7px;
+
+    font-size: 0.82rem;
+    font-weight: bold;
+
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    color: var(--terracota);
+}
+
+.pix-cabecalho h1 {
+    margin-bottom: 12px;
+
+    font-size: 2rem;
+
+    color: var(--marrom-escuro);
+}
+
+.pix-subtitulo {
+    font-size: 1rem;
+    line-height: 1.5;
+
+    color: var(--marrom-medio);
+}
+
+
+/* ==============================
+   VALOR
+============================== */
+
+.pix-valor {
+    margin: 24px 0;
+    padding: 14px 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: #f8eadb;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+
+    color: var(--marrom-medio);
+}
+
+.pix-valor strong {
+    font-size: 1.25rem;
+
+    color: var(--marrom-escuro);
+}
+
+
+/* ==============================
+   INSTRUÇÕES
+============================== */
+
+.pix-instrucoes {
+    margin-bottom: 20px;
+}
+
+.pix-instrucoes p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    color: var(--marrom-medio);
+}
+
+
+/* ==============================
+   QR CODE
+============================== */
+
+.pix-qrcode {
+    margin: 0 auto 24px;
+}
+
+.pix-qrcode img {
+    width: 100%;
+    max-width: 260px;
+
+    padding: 10px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+}
+
+
+/* ==============================
+   COPIA E COLA
+============================== */
+
+.pix-copia-cola {
+    margin-bottom: 22px;
+
+    text-align: left;
+}
+
+.pix-copia-cola label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 0.9rem;
+    font-weight: bold;
+
+    color: var(--marrom-escuro);
+}
+
+.pix-copia-cola textarea {
+    width: 100%;
+    height: 95px;
+
+    padding: 11px;
+
+    resize: none;
+
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+
+    font-family: monospace;
+    font-size: 0.78rem;
+    line-height: 1.4;
+
+    color: var(--marrom-medio);
+    background: #fffdf9;
+}
+
+.botao-copiar {
+    width: 100%;
+
+    margin-top: 10px;
+    padding: 13px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: var(--terracota);
+    color: #ffffff;
+
+    font-size: 1rem;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.botao-copiar:hover {
+    background: var(--terracota-escuro);
+}
+
+.botao-copiar:active {
+    transform: translateY(1px);
+}
+
+.mensagem-copia {
+    min-height: 20px;
+
+    margin-top: 7px;
+
+    text-align: center;
+
+    font-size: 0.84rem;
+    font-weight: bold;
+
+    color: var(--verde);
+}
+
+
+/* ==============================
+   STATUS
+============================== */
+
+.status-pagamento {
+    margin-top: 20px;
+    padding: 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    text-align: left;
+
+    background: #f8eadb;
+
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+}
+
+.status-pagamento strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 0.95rem;
+}
+
+.status-pagamento p {
+    font-size: 0.82rem;
+    line-height: 1.4;
+
+    color: var(--marrom-suave);
+}
+
+
+/* ==============================
+   SPINNER
+============================== */
+
+.spinner {
+    width: 28px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    border:
+        3px solid
+        rgba(185, 92, 50, 0.2);
+
+    border-top-color:
+        var(--terracota);
+
+    border-radius: 50%;
+
+    animation:
+        girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+/* ==============================
+   AVISO FINAL
+============================== */
+
+.pix-aviso {
+    margin-top: 18px;
+
+    font-size: 0.8rem;
+    line-height: 1.5;
+
+    color: var(--marrom-suave);
+}
+
+
+/* ==============================
+   RESPONSIVIDADE
+============================== */
+
+@media (max-width: 600px) {
+
+    .pix-container {
+        padding: 18px 12px;
+    }
+
+    .pix-card {
+        padding: 26px 17px;
+    }
+
+    .pix-cabecalho h1 {
+        font-size: 1.65rem;
+    }
+
+    .pix-subtitulo {
+        font-size: 0.92rem;
+    }
+
+    .pix-valor {
+        margin: 20px 0;
+
+        padding: 12px 14px;
+    }
+
+    .pix-qrcode img {
+        max-width: 230px;
+    }
+
+    .pix-copia-cola textarea {
+        height: 85px;
+
+        font-size: 0.72rem;
+    }
+
+    .status-pagamento {
+        padding: 13px;
+    }
+
+}
