@@ -1,6 +1,53 @@
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+        // ==============================
+        // PARTICIPANTE MENOR DE IDADE
+        // ==============================
+
+        const campoIdade =
+            document.getElementById("idade");
+
+        const autorizacaoMenorContainer =
+            document.getElementById(
+                "autorizacaoMenorContainer"
+            );
+
+        function verificarMenorIdade() {
+
+            if (
+                !campoIdade ||
+                !autorizacaoMenorContainer
+            ) {
+                return;
+            }
+
+            const idade = parseInt(
+                campoIdade.value,
+                10
+            );
+
+            if (
+                !isNaN(idade) &&
+                idade < 18
+            ) {
+                autorizacaoMenorContainer
+                    .classList
+                    .remove("hidden");
+
+            } else {
+                autorizacaoMenorContainer
+                    .classList
+                    .add("hidden");
+            }
+        }
+
+        if (campoIdade) {
+            campoIdade.addEventListener(
+                "change",
+                verificarMenorIdade
+            );
+        }
 
         // ==============================
         // MÁSCARA DE CPF

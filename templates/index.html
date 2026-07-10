@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>EMEERJ 2026</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo_reunir_iv.png') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -13,8 +14,37 @@
 <body>
 
     <header class="hero">
-        <h1>EMEERJ 2026</h1>
-        <p>Desligaram o Wi-Fi, quem sou eu?</p>
+
+        <div class="hero-conteudo">
+
+            <!-- LOGO DOS ORGANIZADORES -->
+            <div class="hero-imagem hero-logo">
+                <img src="{{ url_for('static', filename='img/logo_reunir_iv.png') }}" alt="Logo REUNIR IV">
+            </div>
+
+
+            <!-- TÍTULO DO EVENTO -->
+            <div class="hero-texto">
+
+                <h1>
+                    EMEERJ 2026
+                </h1>
+
+                <p>
+                    Desligaram o Wi-Fi, quem sou eu?
+                </p>
+
+            </div>
+
+
+            <!-- ARTE OFICIAL DO EVENTO -->
+            <div class="hero-imagem hero-arte">
+                <img src="{{ url_for('static', filename='img/imagem_emeerj2026.jpeg') }}"
+                    alt="Arte oficial do EMEERJ 2026">
+            </div>
+
+        </div>
+
     </header>
 
     <main class="container">
@@ -70,6 +100,23 @@
             <div class="form-group">
                 <label for="idade">Qual sua idade?</label>
                 <input type="number" id="idade" name="idade" min="1" required>
+            </div>
+
+            <div class="form-group hidden" id="autorizacaoMenorContainer">
+                <div class="aviso-menor">
+                    <h3>Participante menor de idade</h3>
+
+                    <p>
+                        Se você for menor de idade, baixe a autorização abaixo, imprima,
+                        peça a assinatura do responsável e entregue o documento ao
+                        coordenador da mocidade da sua casa espírita.
+                    </p>
+
+                    <a href="{{ url_for('static', filename='docs/termo_emeerj.pdf') }}" target="_blank" rel="noopener"
+                        class="botao-download">
+                        Abrir autorização para baixar ou imprimir
+                    </a>
+                </div>
             </div>
 
             <div class="form-group">
@@ -330,33 +377,60 @@
                 </select>
             </div>
 
-            <div class="resumo-pagamento">
-                <p>
-                    Valor da inscrição:
-                    <strong>R$ 25,00</strong>
-                </p>
+            <!-- CONSENTIMENTO E AUTORIZAÇÃO -->
 
-                <p>
-                    Total a pagar:
-                    <strong>R$ 25,00</strong>
-                </p>
-            </div>
+            <div class="form-group consentimento-container">
 
-            <!-- TERMO DE AUTORIZAÇÃO / LGPD -->
-            <div class="form-group termo-lgpd">
-                <label>
+                <div class="texto-consentimento">
+
+                    <h3>
+                        Uso dos dados pessoais
+                    </h3>
+
+                    <p>
+                        Declaro que autorizo o uso dos meus dados para fins de
+                        inscrição, organização, segurança, alimentação, comunicação
+                        e controle de pagamento do evento EMEERJ 2026.
+                    </p>
+
+                </div>
+
+
+                <details class="texto-consentimento autorizacao-imagem">
+
+                    <summary>
+                        <span>
+                            Autorização de uso de imagem e som
+                        </span>
+
+                        <span class="ler-mais">
+                            Ler mais
+                        </span>
+                    </summary>
+
+                    <p>
+                        Declaro que autorizo o uso da minha imagem e som no EMEERJ,
+                        para a divulgação do evento, sem que nada haja a ser reclamado
+                        a título de direitos conexos ou do autor à minha imagem ou a
+                        qualquer outro dessa natureza.
+                    </p>
+
+                </details>
+
+
+                <label class="aceite-consentimento">
+
                     <input type="checkbox" id="termoLgpd" name="termo_lgpd" value="Sim" required>
-                    Declaro que autorizo o uso dos meus dados para fins de inscrição,
-                    organização, segurança, alimentação, comunicação e controle de pagamento
-                    do evento EMEERJ 2026.
-                </label>
-            </div>
 
-            <p class="aviso-antes-pagamento">
-                Ao continuar, você será redirecionado ao Mercado Pago.
-                Caso não conclua o pagamento agora, poderá voltar depois
-                e continuar usando seu CPF e o e-mail informado.
-            </p>
+                    <span>
+                        Declaro que li e concordo com os termos de uso dos dados
+                        pessoais e de autorização de uso de imagem e som apresentados
+                        acima.
+                    </span>
+
+                </label>
+
+            </div>
 
             <button type="submit">
                 Continuar para pagamento

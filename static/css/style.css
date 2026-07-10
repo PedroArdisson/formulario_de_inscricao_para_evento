@@ -1,4 +1,26 @@
 /* ==============================
+   PALETA DO EVENTO
+============================== */
+
+:root {
+    --fundo-pagina: #f3e2cf;
+    --fundo-card: #fffaf4;
+    --fundo-suave: #f8eadb;
+
+    --marrom-escuro: #4d2618;
+    --marrom-medio: #6b3824;
+    --marrom-suave: #765c4d;
+
+    --caramelo: #c87945;
+    --terracota: #b95c32;
+    --terracota-escuro: #963f24;
+
+    --borda: #d8b995;
+    --borda-forte: #c99a70;
+}
+
+
+/* ==============================
    RESET E CONFIGURAÇÕES GERAIS
 ============================== */
 
@@ -10,29 +32,110 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #f4f6f8;
-    color: #222;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f7eadb 0%,
+            var(--fundo-pagina) 100%
+        );
+
+    color: var(--marrom-escuro);
 }
 
 
 /* ==============================
-   CABEÇALHO
+   CABEÇALHO DO EVENTO
 ============================== */
 
 .hero {
-    background: linear-gradient(135deg, #163c7a, #1f7a8c);
-    color: white;
+    padding: 34px 30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f2d6b3,
+            #e4b680
+        );
+
+    border-bottom: 1px solid var(--borda-forte);
+}
+
+.hero-conteudo {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+
+    align-items: center;
+    gap: 36px;
+}
+
+
+/* IMAGENS DO CABEÇALHO */
+
+.hero-imagem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-imagem img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+
+/* LOGO DOS ORGANIZADORES */
+
+.hero-logo img {
+    width: 145px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 18px rgba(76, 39, 23, 0.16);
+}
+
+
+/* ARTE OFICIAL */
+
+.hero-arte img {
+    width: 145px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 6px 18px rgba(76, 39, 23, 0.16);
+}
+
+
+/* TÍTULO CENTRAL */
+
+.hero-texto {
     text-align: center;
-    padding: 60px 20px;
 }
 
-.hero h1 {
+.hero-texto h1 {
+    margin: 0 0 10px;
+
     font-size: 3rem;
-    margin-bottom: 10px;
+    line-height: 1;
+
+    color: var(--marrom-escuro);
 }
 
-.hero p {
+.hero-texto p {
+    margin: 0;
+
     font-size: 1.3rem;
+    line-height: 1.4;
+
+    color: var(--marrom-medio);
 }
 
 
@@ -42,14 +145,17 @@ body {
 
 .container {
     max-width: 850px;
+
     margin: 40px auto;
     padding: 35px;
 
-    background: white;
-    border-radius: 14px;
+    background: var(--fundo-card);
+
+    border: 1px solid rgba(216, 185, 149, 0.7);
+    border-radius: 16px;
 
     box-shadow:
-        0 4px 18px rgba(0, 0, 0, 0.1);
+        0 8px 28px rgba(77, 38, 24, 0.12);
 }
 
 
@@ -63,9 +169,11 @@ body {
 
 label {
     display: block;
+
     margin-bottom: 8px;
 
     font-weight: bold;
+    color: var(--marrom-escuro);
 }
 
 input,
@@ -74,17 +182,25 @@ textarea {
     width: 100%;
     padding: 12px;
 
-    border: 1px solid #bbb;
+    border: 1px solid var(--borda);
     border-radius: 8px;
 
     font-family: inherit;
     font-size: 1rem;
 
-    background: #ffffff;
+    color: var(--marrom-escuro);
+    background: #fffdf9;
 
     transition:
         border-color 0.2s ease,
-        box-shadow 0.2s ease;
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--borda-forte);
 }
 
 input:focus,
@@ -92,10 +208,12 @@ select:focus,
 textarea:focus {
     outline: none;
 
-    border-color: #1f7a8c;
+    border-color: var(--terracota);
+
+    background: #ffffff;
 
     box-shadow:
-        0 0 0 3px rgba(31, 122, 140, 0.15);
+        0 0 0 3px rgba(185, 92, 50, 0.14);
 }
 
 .form-group input + input {
@@ -123,6 +241,8 @@ textarea:focus {
 .radio-group input {
     width: auto;
     margin-right: 6px;
+
+    accent-color: var(--terracota);
 }
 
 
@@ -147,82 +267,8 @@ textarea:focus {
     font-size: 0.9rem;
     line-height: 1.4;
 
-    color: #666;
+    color: var(--marrom-suave);
 }
-
-
-/* ==============================
-   RESUMO DO PAGAMENTO
-============================== */
-
-.resumo-pagamento {
-    margin-bottom: 24px;
-    padding: 18px;
-
-    background: #eef3f7;
-    border-radius: 10px;
-}
-
-.resumo-pagamento p {
-    margin-bottom: 8px;
-}
-
-.resumo-pagamento p:last-child {
-    margin-bottom: 0;
-}
-
-
-/* ==============================
-   AVISO ANTES DO PAGAMENTO
-============================== */
-
-.aviso-antes-pagamento {
-    margin: 20px 0;
-    padding: 15px;
-
-    background: #fff8e6;
-    border: 1px solid #f0d899;
-    border-radius: 10px;
-
-    font-size: 0.95rem;
-    line-height: 1.5;
-
-    color: #5f4b1d;
-}
-
-
-/* ==============================
-   TERMO LGPD
-============================== */
-
-.termo-lgpd {
-    padding: 15px;
-
-    background: #eef3f7;
-    border-radius: 10px;
-
-    font-size: 0.95rem;
-}
-
-.termo-lgpd label {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-
-    margin-bottom: 0;
-
-    font-weight: normal;
-    line-height: 1.4;
-}
-
-.termo-lgpd input {
-    width: auto;
-
-    margin-top: 4px;
-
-    flex-shrink: 0;
-}
-
 
 /* ==============================
    BOTÃO PRINCIPAL
@@ -232,24 +278,31 @@ button {
     width: 100%;
     padding: 15px;
 
-    background: #163c7a;
-    color: white;
+    background: var(--terracota);
+    color: #ffffff;
 
     border: none;
-    border-radius: 8px;
+    border-radius: 9px;
 
     font-size: 1.1rem;
     font-weight: bold;
 
     cursor: pointer;
 
+    box-shadow:
+        0 4px 12px rgba(77, 38, 24, 0.15);
+
     transition:
         background 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 button:hover {
-    background: #102d5c;
+    background: var(--terracota-escuro);
+
+    box-shadow:
+        0 6px 16px rgba(77, 38, 24, 0.2);
 }
 
 button:active {
@@ -265,9 +318,9 @@ button:active {
     margin-bottom: 30px;
     padding: 20px;
 
-    background: #f4f7fb;
+    background: var(--fundo-suave);
 
-    border: 1px solid #d9e3f0;
+    border: 1px solid #ddb68c;
     border-radius: 12px;
 
     text-align: center;
@@ -279,7 +332,7 @@ button:active {
     font-size: 22px;
     font-weight: bold;
 
-    color: #1f3c88;
+    color: var(--marrom-escuro);
 }
 
 .acesso-consulta-texto {
@@ -288,7 +341,7 @@ button:active {
     font-size: 15px;
     line-height: 1.5;
 
-    color: #444;
+    color: var(--marrom-medio);
 }
 
 .botao-consulta {
@@ -296,7 +349,7 @@ button:active {
 
     padding: 12px 20px;
 
-    background: #1f3c88;
+    background: var(--caramelo);
     color: #ffffff;
 
     border-radius: 8px;
@@ -304,17 +357,199 @@ button:active {
     font-weight: bold;
     text-decoration: none;
 
+    box-shadow:
+        0 3px 10px rgba(77, 38, 24, 0.14);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.botao-consulta:hover {
+    background: var(--terracota);
+
+    box-shadow:
+        0 5px 14px rgba(77, 38, 24, 0.18);
+}
+
+.botao-consulta:active {
+    transform: translateY(1px);
+}
+
+
+/* ==============================
+   AVISO DE MENOR DE IDADE
+============================== */
+
+.aviso-menor {
+    padding: 18px;
+
+    background: #fff1dc;
+
+    border: 1px solid #dfb276;
+    border-radius: 12px;
+}
+
+.aviso-menor h3 {
+    margin-bottom: 10px;
+
+    color: var(--marrom-escuro);
+    font-size: 1.1rem;
+}
+
+.aviso-menor p {
+    margin-bottom: 14px;
+
+    line-height: 1.5;
+
+    color: var(--marrom-medio);
+}
+
+.botao-download {
+    display: inline-block;
+
+    padding: 12px 18px;
+
+    background: var(--caramelo);
+    color: #ffffff;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
 }
 
-.botao-consulta:hover {
-    background: #162d66;
+.botao-download:hover {
+    background: var(--terracota);
 }
 
-.botao-consulta:active {
+.botao-download:active {
     transform: translateY(1px);
+}
+
+
+/* ==============================
+   CONSENTIMENTO E AUTORIZAÇÃO
+============================== */
+
+.consentimento-container {
+    margin-top: 18px;
+}
+
+.texto-consentimento {
+    margin-bottom: 8px;
+    padding: 9px 11px;
+
+    background: #f8ede1;
+
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+}
+
+.texto-consentimento h3 {
+    margin-bottom: 4px;
+
+    font-size: 0.88rem;
+
+    color: var(--marrom-escuro);
+}
+
+.texto-consentimento p {
+    font-size: 0.82rem;
+    line-height: 1.35;
+
+    color: var(--marrom-medio);
+}
+
+
+/* ==============================
+   AUTORIZAÇÃO DE IMAGEM
+============================== */
+
+.autorizacao-imagem summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    font-size: 0.88rem;
+    font-weight: bold;
+
+    color: var(--marrom-escuro);
+
+    cursor: pointer;
+    list-style: none;
+}
+
+.autorizacao-imagem summary::-webkit-details-marker {
+    display: none;
+}
+
+.ler-mais {
+    flex-shrink: 0;
+
+    font-size: 0.78rem;
+    font-weight: normal;
+
+    color: var(--terracota);
+}
+
+.ler-mais:hover {
+    color: var(--terracota-escuro);
+}
+
+.autorizacao-imagem[open] .ler-mais {
+    font-size: 0;
+}
+
+.autorizacao-imagem[open] .ler-mais::after {
+    content: "Fechar";
+
+    font-size: 0.78rem;
+}
+
+.autorizacao-imagem p {
+    margin-top: 8px;
+}
+
+
+/* ==============================
+   CHECK ÚNICO
+============================== */
+
+.aceite-consentimento {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    padding: 10px 11px;
+
+    background: #f3e4d3;
+
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+
+    font-size: 0.82rem;
+    font-weight: normal;
+    line-height: 1.35;
+
+    color: var(--marrom-medio);
+}
+
+.aceite-consentimento input {
+    width: auto;
+
+    margin-top: 3px;
+
+    flex-shrink: 0;
+
+    accent-color: var(--terracota);
 }
 
 
@@ -325,15 +560,27 @@ button:active {
 @media (max-width: 768px) {
 
     .hero {
-        padding: 40px 18px;
+        padding: 24px 16px;
     }
 
-    .hero h1 {
-        font-size: 2.2rem;
+    .hero-conteudo {
+        grid-template-columns: 75px 1fr 75px;
+        gap: 12px;
     }
 
-    .hero p {
-        font-size: 1.1rem;
+    .hero-logo img,
+    .hero-arte img {
+        width: 75px;
+
+        border-radius: 10px;
+    }
+
+    .hero-texto h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero-texto p {
+        font-size: 0.7rem;
     }
 
     .container {
@@ -358,5 +605,58 @@ button:active {
     select,
     textarea {
         font-size: 16px;
+    }
+
+    /* CONSENTIMENTOS MAIS COMPACTOS NO CELULAR */
+
+    .consentimento-container {
+        margin-top: 14px;
+    }
+
+    .texto-consentimento {
+        margin-bottom: 6px;
+        padding: 7px 9px;
+        border-radius: 7px;
+    }
+
+    .texto-consentimento h3 {
+        margin-bottom: 3px;
+        font-size: 0.78rem;
+    }
+
+    .texto-consentimento p {
+        font-size: 0.74rem;
+        line-height: 1.3;
+    }
+
+    .autorizacao-imagem summary {
+        gap: 8px;
+        font-size: 0.78rem;
+    }
+
+    .ler-mais {
+        font-size: 0.7rem;
+    }
+
+    .autorizacao-imagem[open] .ler-mais::after {
+        font-size: 0.7rem;
+    }
+
+    .autorizacao-imagem p {
+        margin-top: 6px;
+    }
+
+    .aceite-consentimento {
+        gap: 7px;
+        padding: 8px 9px;
+
+        font-size: 0.74rem;
+        line-height: 1.3;
+
+        border-radius: 7px;
+    }
+
+    .aceite-consentimento input {
+        margin-top: 2px;
     }
 }
