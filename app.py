@@ -483,11 +483,13 @@ def exibir_resultado_pagamento(status_padrao):
                 "approved": "APROVADO",
                 "pending": "PENDENTE",
                 "in_process": "PENDENTE",
-                "authorized": "AUTORIZADO",
-                "rejected": "RECUSADO",
-                "cancelled": "CANCELADO",
-                "refunded": "REEMBOLSADO",
-                "charged_back": "ESTORNADO"
+                "authorized": "PENDENTE",
+                "rejected": "PENDENTE",
+                "cancelled": "PENDENTE",
+                "canceled": "PENDENTE",
+                "expired": "PENDENTE",
+                "refunded": "PENDENTE",
+                "charged_back": "PENDENTE"
             }
 
             status_local = mapa_status.get(
@@ -931,16 +933,6 @@ def continuar_pagamento():
             status_mp = pagamento_atual.get(
                 "status"
             )
-
-            # O pagamento já foi aprovado,
-            # mesmo que o webhook ainda não tenha
-            # atualizado a tela consultada.
-            if status_mp == "approved":
-
-                return redirect(
-                    "/pagamento/sucesso"
-                    f"?payment_id={payment_id}"
-                )
 
             # Se ainda está aguardando,
             # tentamos mostrar o mesmo QR Code.
