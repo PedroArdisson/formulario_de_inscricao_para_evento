@@ -158,7 +158,7 @@ def criar_pagamento_pix(
 
     data_expiracao = (
         datetime.now(timezone(timedelta(hours=-3)))
-        + timedelta(days=7)
+        + timedelta(days=30)
     ).replace(microsecond=0).isoformat()
 
     dados = {
