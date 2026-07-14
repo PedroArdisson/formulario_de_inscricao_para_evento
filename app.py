@@ -740,11 +740,13 @@ def webhook_mercado_pago():
                 "approved": "APROVADO",
                 "pending": "PENDENTE",
                 "in_process": "PENDENTE",
-                "authorized": "AUTORIZADO",
-                "rejected": "RECUSADO",
-                "cancelled": "CANCELADO",
-                "refunded": "REEMBOLSADO",
-                "charged_back": "ESTORNADO"
+                "authorized": "PENDENTE",
+                "rejected": "PENDENTE",
+                "cancelled": "PENDENTE",
+                "canceled": "PENDENTE",
+                "expired": "PENDENTE",
+                "refunded": "PENDENTE",
+                "charged_back": "PENDENTE"
             }
 
             status_local = mapa_status.get(
