@@ -158,8 +158,8 @@ def criar_pagamento_pix(
 
     data_expiracao = (
         datetime.now(timezone(timedelta(hours=-3)))
-        + timedelta(days=30)
-    ).replace(microsecond=0).isoformat()
+        + timedelta(days=7)
+    ).strftime("%Y-%m-%dT%H:%M:%S.000-03:00")
 
     dados = {
         "transaction_amount": float(
