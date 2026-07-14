@@ -1,4 +1,5 @@
 import os
+import re
 from decimal import Decimal
 from datetime import datetime
 
@@ -38,6 +39,22 @@ inicializar_banco()
 
 VALOR_INSCRICAO = 25
 
+EMAIL_REGEX = re.compile(
+    r"^[^\s@]+@[^\s@]+\.[^\s@]+$"
+)
+
+
+def normalizar_email(email):
+    return (
+        email or ""
+    ).strip().lower()
+
+
+def email_valido(email):
+    return bool(
+        EMAIL_REGEX.match(email)
+    )
+
 def extrair_dados_pix(pagamento):
     """
     Extrai o QR Code e o Pix Copia e Cola
@@ -72,7 +89,16 @@ def pagina_inicial():
 def receber_inscricao():
     # Dados básicos
     nome_completo = request.form.get("nome_completo")
-    email = request.form.get("email")
+    email = normalizar_email(
+        request.form.get("email", "")
+    )
+
+    if not email_valido(email):
+        return (
+            "E-mail inválido. "
+            "Volte e informe um e-mail válido.",
+            400
+        )
     cpf = normalizar_cpf(request.form.get("cpf", ""))
     if not cpf_valido(cpf):
         return (
@@ -826,10 +852,8 @@ def continuar_pagamento():
         request.form.get("cpf", "")
     )
 
-    email = (
+    email = normalizar_email(
         request.form.get("email", "")
-        .strip()
-        .lower()
     )
 
     if not cpf or not email:
@@ -1083,10 +1107,16 @@ def consultar_inscricao():
         request.form.get("cpf", "")
     )
 
-    email = (
+    email = normalizar_email(
         request.form.get("email", "")
-        .strip()
-        .lower()
+    )
+
+    if not email_valido(email):
+    return render_template(
+        "consultar_inscricao.html",
+        erro=(
+            "Informe um e-mail válido."
+        )
     )
 
     if not cpf_valido(cpf):
