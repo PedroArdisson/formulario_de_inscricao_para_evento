@@ -519,7 +519,8 @@ def exibir_resultado_pagamento(status_padrao):
                     """
                     SELECT
                         nome_social,
-                        valor_total
+                        valor_total,
+                        status_pagamento
                     FROM inscricoes
                     WHERE id = ?
                     """,
@@ -535,6 +536,10 @@ def exibir_resultado_pagamento(status_padrao):
                     f"{inscricao[1]:.2f}"
                     .replace(".", ",")
                 )
+
+                # Se não veio payment_id válido, usa o status real do banco.
+                if not payment_id:
+                    status_local = inscricao[2]
 
         except (TypeError, ValueError):
             print(
@@ -552,7 +557,7 @@ def exibir_resultado_pagamento(status_padrao):
 @app.route("/pagamento/sucesso")
 def pagamento_sucesso():
     return exibir_resultado_pagamento(
-        "APROVADO"
+        "PENDENTE"
     )
 
 @app.route("/pagamento/falha")
