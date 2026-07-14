@@ -537,9 +537,12 @@ def exibir_resultado_pagamento(status_padrao):
                     .replace(".", ",")
                 )
 
-                # Se não veio payment_id válido, usa o status real do banco.
+                status_banco = inscricao[2]
+
+                # Se não veio payment_id válido do Mercado Pago,
+                # o site deve confiar no status salvo no banco.
                 if not payment_id:
-                    status_local = inscricao[2]
+                    status_local = status_banco
 
         except (TypeError, ValueError):
             print(
