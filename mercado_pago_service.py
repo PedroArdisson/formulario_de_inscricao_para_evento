@@ -2,6 +2,7 @@ import os
 import requests
 import urllib3
 from dotenv import load_dotenv
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 
@@ -155,6 +156,11 @@ def criar_pagamento_pix(
             "MP_ACCESS_TOKEN não configurado."
         )
 
+    data_expiracao = (
+        datetime.now(timezone(timedelta(hours=-3)))
+        + timedelta(days=7)
+    ).replace(microsecond=0).isoformat()
+
     dados = {
         "transaction_amount": float(
             valor_inscricao
@@ -168,6 +174,9 @@ def criar_pagamento_pix(
         "external_reference": str(
             id_inscricao
         ),
+
+        # Mantém o Pix válido por 7 dias.
+        "date_of_expiration": data_expiracao,
 
         "payer": {
             "email": email,
@@ -256,6 +265,7 @@ def criar_pagamento_pix(
     print("\n--- PIX CRIADO ---")
     print("Payment ID:", pagamento.get("id"))
     print("Status:", pagamento.get("status"))
+    print("Expira em:", data_expiracao)
     print(
         "Inscrição:",
         pagamento.get("external_reference")
