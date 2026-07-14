@@ -1112,12 +1112,12 @@ def consultar_inscricao():
     )
 
     if not email_valido(email):
-    return render_template(
-        "consultar_inscricao.html",
-        erro=(
-            "Informe um e-mail válido."
+        return render_template(
+            "consultar_inscricao.html",
+            erro=(
+                "Informe um e-mail válido."
+            )
         )
-    )
 
     if not cpf_valido(cpf):
         return render_template(
